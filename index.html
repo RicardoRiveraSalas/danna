@@ -68,6 +68,38 @@ body{
   pointer-events:none
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.ruta-btn{
+  position:fixed;
+  top:20px;
+  right:20px;
+  z-index:500;
+  background:linear-gradient(135deg,#ff69b4,#00bfff);
+  color:#fff;
+  text-decoration:none;
+  padding:12px 24px;
+  border-radius:25px;
+  font-weight:600;
+  font-size:.95em;
+  cursor:pointer;
+  transition:all .3s ease;
+  box-shadow:0 4px 15px rgba(255,69,180,.3);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:none
+}
+.ruta-btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 25px rgba(255,69,180,.5)
+}
+@media(max-width:600px){
+  .ruta-btn{
+    top:10px;
+    right:10px;
+    padding:10px 16px;
+    font-size:.85em
+  }
+}
 footer{
   position:relative;
   z-index:200;
@@ -99,6 +131,7 @@ footer{
 </style>
 </head>
 <body>
+<a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
 <div class="container" id="gallery"></div>
 <div class="modal-overlay" id="modal">
   <img class="modal-img" id="modalImg" src="" alt="modal">
