@@ -1,787 +1,1114 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ruta Vocacional - Descubre tu Carrera</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
-  min-height:100vh;
-  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  color:#fff;
-  overflow-x:hidden
-}
-.particles{
-  position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  pointer-events:none;
-  z-index:1
-}
-.particle{
-  position:absolute;
-  width:4px;height:4px;
-  background:radial-gradient(circle,rgba(255,182,193,.8),rgba(255,182,193,0));
-  border-radius:50%;
-  animation:float-particle 20s infinite linear
-}
-@keyframes float-particle{
-  0%{transform:translateY(100vh) translateX(0);opacity:1}
-  100%{transform:translateY(-100vh) translateX(100px);opacity:0}
-}
-.container{
-  position:relative;
-  z-index:10;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px
-}
-.header{
-  text-align:center;
-  margin-bottom:40px;
-}
-.logo{
-  font-size:3em;
-  font-weight:900;
-  background:linear-gradient(135deg,#ff69b4,#00bfff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  margin-bottom:10px;
-  letter-spacing:2px
-}
-.subtitle{
-  font-size:1.2em;
-  opacity:.8;
-  margin-bottom:30px
-}
-.card{
-  background:rgba(255,255,255,.05);
-  backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:20px;
-  padding:40px;
-  max-width:600px;
-  width:100%;
-  box-shadow:0 8px 32px 0 rgba(31,38,135,.37)
-}
-.screen{
-  display:none
-}
-.screen.active{
-  display:block;
-  animation:slideIn .3s ease
-}
-@keyframes slideIn{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:translateY(0)}
-}
-.progress-bar{
-  width:100%;
-  height:8px;
-  background:rgba(255,255,255,.1);
-  border-radius:10px;
-  margin-bottom:30px;
-  overflow:hidden
-}
-.progress-fill{
-  height:100%;
-  background:linear-gradient(90deg,#ff69b4,#00bfff);
-  border-radius:10px;
-  transition:width .3s ease
-}
-.question-title{
-  font-size:1.5em;
-  font-weight:600;
-  margin-bottom:20px;
-  text-align:center
-}
-.options{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-  margin-bottom:30px
-}
-@media(max-width:500px){
-  .options{grid-template-columns:1fr}
-}
-.option-btn{
-  background:rgba(255,255,255,.08);
-  border:2px solid rgba(255,255,255,.2);
-  border-radius:12px;
-  padding:20px;
-  cursor:pointer;
-  transition:all .3s ease;
-  color:#fff;
-  font-size:1em;
-  text-align:center;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:8px
-}
-.option-btn:hover{
-  background:rgba(255,182,193,.1);
-  border-color:rgba(255,182,193,.4);
-  transform:translateY(-5px)
-}
-.option-btn.selected{
-  background:linear-gradient(135deg,rgba(255,69,180,.3),rgba(0,191,255,.3));
-  border-color:#ff69b4;
-  box-shadow:0 0 20px rgba(255,69,180,.3)
-}
-.emoji{
-  font-size:2em
-}
-.text{
-  font-size:.9em
-}
-.buttons{
-  display:flex;
-  gap:15px;
-  justify-content:center;
-  flex-wrap:wrap
-}
-.btn{
-  padding:12px 30px;
-  border:none;
-  border-radius:25px;
-  cursor:pointer;
-  font-size:1em;
-  font-weight:600;
-  transition:all .3s ease
-}
-.btn-primary{
-  background:linear-gradient(135deg,#ff69b4,#00bfff);
-  color:#fff;
-  flex:1;
-  min-width:150px
-}
-.btn-primary:hover:not(:disabled){
-  transform:translateY(-3px);
-  box-shadow:0 10px 25px rgba(255,69,180,.4)
-}
-.btn-primary:disabled{
-  opacity:.5;
-  cursor:not-allowed
-}
-.btn-secondary{
-  background:rgba(255,255,255,.1);
-  color:#fff;
-  border:1px solid rgba(255,255,255,.2)
-}
-.btn-secondary:hover{
-  background:rgba(255,255,255,.15);
-  border-color:rgba(255,255,255,.3)
-}
-.loading{
-  text-align:center;
-  padding:40px
-}
-.spinner{
-  width:50px;
-  height:50px;
-  border:4px solid rgba(255,255,255,.1);
-  border-top:4px solid #ff69b4;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-  margin:0 auto 20px
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.results-grid{
-  display:grid;
-  gap:20px
-}
-.result-card{
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:15px;
-  padding:20px;
-  transition:all .3s ease
-}
-.result-card:hover{
-  background:rgba(255,182,193,.1);
-  border-color:rgba(255,182,193,.3);
-  transform:translateY(-5px)
-}
-.result-number{
-  display:inline-block;
-  width:35px;height:35px;
-  background:linear-gradient(135deg,#ff69b4,#00bfff);
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-  margin-bottom:10px
-}
-.result-title{
-  font-size:1.3em;
-  font-weight:600;
-  margin-bottom:8px
-}
-.result-reason{
-  font-size:.95em;
-  opacity:.85;
-  line-height:1.5
-}
-.result-unis{
-  font-size:.85em;
-  opacity:.7;
-  margin-top:10px;
-  font-style:italic
-}
-.advice{
-  background:rgba(0,191,255,.1);
-  border-left:4px solid #00bfff;
-  padding:20px;
-  border-radius:8px;
-  margin-top:30px;
-  line-height:1.6
-}
-.share-btn{
-  margin-top:20px;
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px
-}
-.error{
-  background:rgba(255,69,180,.1);
-  border:1px solid rgba(255,69,180,.3);
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:20px;
-  text-align:center;
-  color:#ffb3d9
-}
-.welcome-svg{
-  width:150px;
-  height:150px;
-  margin:0 auto 20px
-}
-@media(max-width:600px){
-  .card{padding:25px}
-  .logo{font-size:2.2em}
-  .subtitle{font-size:1em}
-  .options{gap:10px}
-  .option-btn{padding:15px}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ruta Vocacional - Descubre tu carrera ideal con IA. Análisis profesional de perfil vocacional para estudiantes costarricenses.">
+  <meta name="theme-color" content="#302b63">
+  <title>Ruta Vocacional | Orientación Profesional Inteligente</title>
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #ff69b4, #00bfff);
+      --bg-dark: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --accent-color: #ff69b4;
+      --secondary-color: #00bfff;
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg-dark);
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Partículas flotantes optimizadas */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: radial-gradient(circle, rgba(255, 182, 193, 0.8), rgba(255, 182, 193, 0));
+      border-radius: 50%;
+      animation: float-particle 20s infinite linear;
+      will-change: transform;
+    }
+
+    @keyframes float-particle {
+      0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(100px);
+        opacity: 0;
+      }
+    }
+
+    /* Container principal */
+    .app-container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInDown 0.6s ease;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      font-size: clamp(2rem, 5vw, 3.5em);
+      font-weight: 900;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 15px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 3vw, 1.2em);
+      opacity: 0.85;
+      margin-bottom: 20px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    .tagline {
+      font-size: 0.95em;
+      opacity: 0.7;
+      margin-bottom: 30px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Card Principal */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: clamp(20px, 5vw, 50px);
+      max-width: 650px;
+      width: 100%;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      animation: slideInUp 0.6s ease 0.2s both;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Pantallas */
+    .screen {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Barra de progreso */
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      margin-bottom: 30px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary-gradient);
+      border-radius: 10px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+    }
+
+    /* Preguntas */
+    .question-title {
+      font-size: clamp(1.3em, 4vw, 1.6em);
+      font-weight: 700;
+      margin-bottom: 28px;
+      text-align: center;
+      line-height: 1.3;
+      letter-spacing: 0.3px;
+    }
+
+    .question-number {
+      opacity: 0.7;
+      font-size: 0.9em;
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    /* Opciones */
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 35px;
+    }
+
+    @media (max-width: 500px) {
+      .options {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+    }
+
+    .option-btn {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 16px;
+      padding: clamp(15px, 4vw, 25px);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      color: #fff;
+      font-size: 1em;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 110px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255, 69, 180, 0.1), rgba(0, 191, 255, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .option-btn:hover {
+      border-color: rgba(255, 182, 193, 0.6);
+      background: rgba(255, 182, 193, 0.08);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(255, 105, 180, 0.15);
+    }
+
+    .option-btn.selected {
+      background: linear-gradient(135deg, rgba(255, 69, 180, 0.25), rgba(0, 191, 255, 0.25));
+      border-color: var(--accent-color);
+      box-shadow: 0 0 25px rgba(255, 69, 180, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+    }
+
+    .option-btn .emoji {
+      font-size: 2.2em;
+      transition: transform 0.3s ease;
+    }
+
+    .option-btn:hover .emoji {
+      transform: scale(1.15);
+    }
+
+    .option-btn .text {
+      font-size: 0.9em;
+      line-height: 1.3;
+      font-weight: 500;
+    }
+
+    /* Botones */
+    .buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 13px 32px;
+      border: none;
+      border-radius: 26px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      transition: var(--transition-smooth);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-size: 0.95em;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: #fff;
+      flex: 1;
+      min-width: 160px;
+      box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5);
+    }
+
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* Pantalla de carga */
+    .loading-screen {
+      text-align: center;
+      padding: 60px 40px;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top: 4px solid var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+      margin: 0 auto 25px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      font-size: 1.1em;
+      opacity: 0.85;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .loading-dots {
+      display: inline-block;
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: ''; }
+      40% { content: '.'; }
+      60% { content: '..'; }
+      80%, 100% { content: '...'; }
+    }
+
+    /* Resultados */
+    .results-section {
+      animation: fadeIn 0.5s ease;
+    }
+
+    .results-title {
+      font-size: 1.5em;
+      font-weight: 700;
+      margin-bottom: 28px;
+      text-align: center;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .results-grid {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 35px;
+    }
+
+    .result-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .result-card:hover {
+      background: rgba(255, 182, 193, 0.08);
+      border-color: rgba(255, 182, 193, 0.4);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(255, 105, 180, 0.2);
+    }
+
+    .result-card:hover::before {
+      left: 100%;
+    }
+
+    .result-rank {
+      display: inline-flex;
+      width: 40px;
+      height: 40px;
+      background: var(--primary-gradient);
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+    }
+
+    .result-title {
+      font-size: 1.25em;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #fff;
+      letter-spacing: 0.3px;
+    }
+
+    .result-reason {
+      font-size: 0.95em;
+      opacity: 0.85;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+
+    .result-unis {
+      font-size: 0.85em;
+      opacity: 0.7;
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Consejo */
+    .advice-box {
+      background: linear-gradient(135deg, rgba(0, 191, 255, 0.15), rgba(0, 191, 255, 0.08));
+      border-left: 4px solid var(--secondary-color);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 30px;
+      line-height: 1.8;
+      position: relative;
+    }
+
+    .advice-box::before {
+      content: '💡';
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 2em;
+      opacity: 0.3;
+    }
+
+    .advice-title {
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 1.05em;
+      letter-spacing: 0.3px;
+    }
+
+    .advice-text {
+      opacity: 0.9;
+      font-size: 0.95em;
+    }
+
+    /* SVG Bienvenida */
+    .welcome-svg {
+      width: clamp(120px, 20vw, 180px);
+      height: auto;
+      margin: 0 auto 25px;
+      display: block;
+      filter: drop-shadow(0 4px 15px rgba(255, 105, 180, 0.2));
+      animation: bounce 3s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .welcome-text {
+      text-align: center;
+      opacity: 0.85;
+      margin-bottom: 35px;
+      line-height: 1.8;
+      font-size: 1em;
+    }
+
+    /* Indicador IA */
+    .ai-badge {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(255, 105, 180, 0.2));
+      border: 1px solid rgba(0, 191, 255, 0.5);
+      padding: 12px 18px;
+      border-radius: 24px;
+      font-size: 0.85em;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+      animation: slideInRight 0.6s ease;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--secondary-color);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(0, 191, 255, 0.7);
+      }
+      50% {
+        box-shadow: 0 0 0 8px rgba(0, 191, 255, 0);
+      }
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      .app-container {
+        padding: 15px;
+      }
+
+      .card {
+        border-radius: 20px;
+        padding: 25px;
+      }
+
+      .header {
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        letter-spacing: 2px;
+      }
+
+      .buttons {
+        gap: 12px;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        font-size: 0.9em;
+        min-width: 140px;
+      }
+
+      .ai-badge {
+        bottom: 15px;
+        right: 15px;
+        font-size: 0.8em;
+        padding: 10px 14px;
+      }
+
+      .advice-box {
+        padding: 20px;
+      }
+
+      .result-card {
+        padding: 18px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="particles" id="particles"></div>
-<div class="container">
-  <div>
+  <div class="particles" id="particles"></div>
+
+  <div class="app-container">
     <div class="header">
       <div class="logo">🌱 RUTA</div>
-      <p class="subtitle">Descubre tu carrera ideal</p>
+      <p class="subtitle">Orientación Vocacional</p>
+      <p class="tagline">Descubre tu carrera ideal con análisis inteligente</p>
     </div>
-    
+
     <div class="card">
-      <!-- Pantalla de bienvenida -->
+      <!-- Pantalla de Bienvenida -->
       <div class="screen active" id="welcome">
-        <svg class="welcome-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-          <!-- Cabeza -->
+        <svg class="welcome-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <circle cx="100" cy="80" r="35" fill="#ff69b4"/>
-          <!-- Ojos -->
           <circle cx="90" cy="75" r="4" fill="#fff"/>
           <circle cx="110" cy="75" r="4" fill="#fff"/>
-          <!-- Sonrisa -->
           <path d="M 90 85 Q 100 92 110 85" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
-          <!-- Cuerpo -->
           <path d="M 75 110 L 70 150 M 100 115 L 100 155 M 125 110 L 130 150" stroke="#00bfff" stroke-width="3" stroke-linecap="round"/>
-          <!-- Brillo -->
           <circle cx="75" cy="65" r="8" fill="#ffff00" opacity="0.6"/>
         </svg>
-        <h2 class="question-title">¡Hola! 👋</h2>
-        <p style="text-align:center;opacity:.8;margin-bottom:30px;line-height:1.6">
-          Te ayudaré a descubrir qué carrera universitaria o técnica se ajusta mejor a tu perfil. Responde 10 preguntas rápidas y obtendrás recomendaciones personalizadas.
+        <h1 class="question-title">¡Hola! 👋</h1>
+        <p class="welcome-text">
+          Te guiaremos a través de un cuestionario inteligente para identificar las carreras universitarias y técnicas que mejor se ajustan a tu perfil, habilidades y aspiraciones.
         </p>
-        <button class="btn btn-primary" onclick="startQuiz()">Comenzar Cuestionario</button>
+        <div class="buttons">
+          <button class="btn btn-primary" onclick="app.startQuiz()">Comenzar Cuestionario</button>
+        </div>
       </div>
 
-      <!-- Pantalla de preguntas -->
+      <!-- Pantalla de Preguntas -->
       <div class="screen" id="quiz">
         <div class="progress-bar">
           <div class="progress-fill" id="progressFill"></div>
         </div>
-        <div class="question-title" id="questionText"></div>
+        <span class="question-number" id="questionNumber"></span>
+        <h2 class="question-title" id="questionText"></h2>
         <div class="options" id="optionsContainer"></div>
         <div class="buttons">
-          <button class="btn btn-secondary" onclick="previousQuestion()" id="prevBtn" style="display:none">← Anterior</button>
-          <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn" disabled>Siguiente →</button>
+          <button class="btn btn-secondary" onclick="app.previousQuestion()" id="prevBtn" style="display:none">← Anterior</button>
+          <button class="btn btn-primary" onclick="app.nextQuestion()" id="nextBtn" disabled>Siguiente →</button>
         </div>
       </div>
 
-      <!-- Pantalla de carga -->
+      <!-- Pantalla de Carga -->
       <div class="screen" id="loading">
-        <div class="loading">
+        <div class="loading-screen">
           <div class="spinner"></div>
-          <p style="font-size:1.1em;opacity:.8">Analizando tu perfil...</p>
+          <p class="loading-text">Analizando tu perfil<span class="loading-dots"></span></p>
         </div>
       </div>
 
-      <!-- Pantalla de resultados -->
+      <!-- Pantalla de Resultados -->
       <div class="screen" id="results">
-        <h2 class="question-title">🎯 Tus Carreras Recomendadas</h2>
-        <div class="results-grid" id="resultsContainer"></div>
-        <div class="advice" id="adviceContainer"></div>
-        <div class="buttons" style="margin-top:30px">
-          <button class="btn btn-primary" onclick="shareResults()">📤 Compartir Resultados</button>
-          <button class="btn btn-secondary" onclick="restartQuiz()">🔄 Reintentar</button>
+        <div class="results-section">
+          <h2 class="results-title">🎯 Tus Carreras Recomendadas</h2>
+          <div class="results-grid" id="resultsContainer"></div>
+          <div class="advice-box" id="adviceContainer"></div>
+          <div class="buttons">
+            <button class="btn btn-primary" onclick="app.shareResults()">📤 Compartir Resultados</button>
+            <button class="btn btn-secondary" onclick="app.restartQuiz()">🔄 Reintentar</button>
+          </div>
         </div>
       </div>
-
-      <div class="error" id="errorMsg" style="display:none"></div>
     </div>
   </div>
-</div>
 
-<script>
-// Preguntas del cuestionario
-const questions = [
-  {
-    title: "¿Cuál es tu principal fortaleza?",
-    options: [
-      {emoji: "🧠", text: "Análisis lógico y resolución de problemas"},
-      {emoji: "🎨", text: "Creatividad e innovación"},
-      {emoji: "👥", text: "Comunicación y trabajo en equipo"},
-      {emoji: "🔬", text: "Observación y experimentación"}
-    ]
-  },
-  {
-    title: "¿Qué tipo de trabajo te atrae más?",
-    options: [
-      {emoji: "💻", text: "Trabajar con tecnología"},
-      {emoji: "🏥", text: "Ayudar a otras personas"},
-      {emoji: "📊", text: "Analizar datos y números"},
-      {emoji: "✍️", text: "Expresar ideas y crear contenido"}
-    ]
-  },
-  {
-    title: "¿Cuál es tu ambiente ideal de trabajo?",
-    options: [
-      {emoji: "🏢", text: "Oficina moderna con equipos"},
-      {emoji: "🌍", text: "Al aire libre o en terreno"},
-      {emoji: "🔬", text: "Laboratorio o taller"},
-      {emoji: "🎪", text: "Espacios dinámicos y variados"}
-    ]
-  },
-  {
-    title: "¿Qué materia te resultó más interesante en el colegio?",
-    options: [
-      {emoji: "⚛️", text: "Matemática y Física"},
-      {emoji: "🧪", text: "Química y Biología"},
-      {emoji: "📚", text: "Idiomas y Literatura"},
-      {emoji: "🎭", text: "Arte y Educación Física"}
-    ]
-  },
-  {
-    title: "¿Cuál es tu objetivo profesional principal?",
-    options: [
-      {emoji: "💰", text: "Ganar bien y ser independiente"},
-      {emoji: "🌟", text: "Hacer un impacto positivo"},
-      {emoji: "📈", text: "Crecer y liderar proyectos"},
-      {emoji: "❤️", text: "Disfrutar lo que hago"}
-    ]
-  },
-  {
-    title: "¿Cómo prefieres resolver problemas?",
-    options: [
-      {emoji: "🔍", text: "Investigar y experimentar"},
-      {emoji: "📋", text: "Seguir procesos establecidos"},
-      {emoji: "💡", text: "Pensar diferente y innovar"},
-      {emoji: "🤝", text: "Consultar con otros"}
-    ]
-  },
-  {
-    title: "¿Qué te motiva aprender nuevas cosas?",
-    options: [
-      {emoji: "🎓", text: "El conocimiento en sí mismo"},
-      {emoji: "🛠️", text: "Poder aplicar lo aprendido"},
-      {emoji: "🏆", text: "Competir y destacar"},
-      {emoji: "🌱", text: "Crecer como persona"}
-    ]
-  },
-  {
-    title: "¿Cuál es tu nivel de tolerancia al estrés?",
-    options: [
-      {emoji: "😌", text: "Bajo - prefiero ritmos tranquilos"},
-      {emoji: "⚡", text: "Medio - trabajo bien bajo presión moderada"},
-      {emoji: "🔥", text: "Alto - me activo con desafíos"},
-      {emoji: "🧘", text: "Equilibrado - busco balance"}
-    ]
-  },
-  {
-    title: "¿Qué tipo de habilidades practicas frecuentemente?",
-    options: [
-      {emoji: "🖥️", text: "Programación y desarrollo"},
-      {emoji: "🗣️", text: "Presentación y negociación"},
-      {emoji: "🎬", text: "Edición y diseño multimedia"},
-      {emoji: "📱", text: "Redes sociales y marketing"}
-    ]
-  },
-  {
-    title: "¿En qué campo te gustaría especializar?",
-    options: [
-      {emoji: "🚀", text: "Tecnología e innovación"},
-      {emoji: "🌍", text: "Medio ambiente y sostenibilidad"},
-      {emoji: "💼", text: "Negocios y administración"},
-      {emoji: "🎓", text: "Educación y desarrollo"}
-    ]
-  }
-];
+  <div class="ai-badge">
+    <span class="pulse-dot"></span>
+    <span>IA Copilot</span>
+  </div>
 
-// Estado del quiz
-let currentQuestion = 0;
-let answers = [];
-let selectedOption = null;
+  <script>
+    // ====================================
+    // CONFIGURACIÓN Y DATOS
+    // ====================================
 
-// Inicializar partículas flotantes
-function initParticles() {
-  const container = document.getElementById('particles');
-  for(let i = 0; i < 30; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    particle.style.left = Math.random() * 100 + '%';
-    particle.style.top = Math.random() * 100 + '%';
-    particle.style.animationDuration = (15 + Math.random() * 20) + 's';
-    particle.style.animationDelay = Math.random() * 5 + 's';
-    container.appendChild(particle);
-  }
-}
-
-function startQuiz() {
-  showScreen('quiz');
-  currentQuestion = 0;
-  answers = [];
-  selectedOption = null;
-  displayQuestion();
-}
-
-function displayQuestion() {
-  const question = questions[currentQuestion];
-  document.getElementById('questionText').textContent = question.title;
-  
-  const optionsContainer = document.getElementById('optionsContainer');
-  optionsContainer.innerHTML = '';
-  
-  question.options.forEach((option, index) => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.innerHTML = `<span class="emoji">${option.emoji}</span><span class="text">${option.text}</span>`;
-    btn.onclick = () => selectOption(index);
-    if(selectedOption === index) btn.classList.add('selected');
-    optionsContainer.appendChild(btn);
-  });
-  
-  updateProgress();
-  updateButtons();
-}
-
-function selectOption(index) {
-  selectedOption = index;
-  displayQuestion();
-}
-
-function nextQuestion() {
-  if(selectedOption === null) return;
-  
-  answers[currentQuestion] = selectedOption;
-  
-  if(currentQuestion < questions.length - 1) {
-    currentQuestion++;
-    selectedOption = answers[currentQuestion] !== undefined ? answers[currentQuestion] : null;
-    displayQuestion();
-  } else {
-    analyzeAnswers();
-  }
-}
-
-function previousQuestion() {
-  if(currentQuestion > 0) {
-    answers[currentQuestion] = selectedOption;
-    currentQuestion--;
-    selectedOption = answers[currentQuestion] !== undefined ? answers[currentQuestion] : null;
-    displayQuestion();
-  }
-}
-
-function updateProgress() {
-  const progress = ((currentQuestion + 1) / questions.length) * 100;
-  document.getElementById('progressFill').style.width = progress + '%';
-}
-
-function updateButtons() {
-  document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'block' : 'none';
-  document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '✓ Enviar' : 'Siguiente →';
-  document.getElementById('nextBtn').disabled = selectedOption === null;
-}
-
-function analyzeAnswers() {
-  answers[currentQuestion] = selectedOption;
-  showScreen('loading');
-  
-  // Crear prompt para la IA
-  const prompt = createAnalysisPrompt();
-  
-  // Intentar con API gratuita
-  callAI(prompt);
-}
-
-function createAnalysisPrompt() {
-  const answerSummary = answers.map((ans, i) => {
-    const question = questions[i];
-    const selectedText = (ans !== undefined && question && question.options[ans]) ? question.options[ans].text : 'Sin respuesta';
-    return `Pregunta ${i+1}: "${question.title}" - Respuesta: "${selectedText}"`;
-  }).join('\n');
-  
-  return `Basándote en estas respuestas de un estudiante de colegio en Costa Rica:
-
-${answerSummary}
-
-Proporciona exactamente 4 carreras universitarias o técnicas que se ajusten a su perfil. Para cada una incluye:
-1. Nombre de la carrera
-2. Una razón concisa (1-2 líneas) de por qué se ajusta al perfil
-3. 2-3 universidades o institutos donde se ofrece en Costa Rica (TEC, UCR, UNA, UNED, INTA, etc.)
-
-Luego, proporciona un consejo personalizado motivador.
-
-Formatea la respuesta así:
-CARRERA 1: [nombre]
-RAZON 1: [razón]
-UNIS 1: [universidades]
-
-CARRERA 2: [nombre]
-RAZON 2: [razón]
-UNIS 2: [universidades]
-
-[y así para las 4 carreras]
-
-CONSEJO: [consejo personalizado]`;
-}
-
-async function callAI(prompt) {
-  try {
-    // Intenta con Ollama (necesita estar corriendo localmente)
-    try {
-      const response = await fetch('http://localhost:11434/api/generate', {
-        method: 'POST',
-        body: JSON.stringify({
-          model: 'llama2',
-          prompt: prompt,
-          stream: false
-        })
-      });
-      
-      if(response.ok) {
-        const data = await response.json();
-        processAIResponse(data.response);
-        return;
+    const QUESTIONS = [
+      {
+        title: "¿Cuál es tu principal fortaleza?",
+        options: [
+          { emoji: "🧠", text: "Análisis lógico y resolución de problemas" },
+          { emoji: "🎨", text: "Creatividad e innovación" },
+          { emoji: "👥", text: "Comunicación y trabajo en equipo" },
+          { emoji: "🔬", text: "Observación y experimentación" }
+        ]
+      },
+      {
+        title: "¿Qué tipo de trabajo te atrae más?",
+        options: [
+          { emoji: "💻", text: "Trabajar con tecnología" },
+          { emoji: "🏥", text: "Ayudar a otras personas" },
+          { emoji: "📊", text: "Analizar datos y números" },
+          { emoji: "✍️", text: "Expresar ideas y crear contenido" }
+        ]
+      },
+      {
+        title: "¿Cuál es tu ambiente ideal de trabajo?",
+        options: [
+          { emoji: "🏢", text: "Oficina moderna con equipos" },
+          { emoji: "🌍", text: "Al aire libre o en terreno" },
+          { emoji: "🔬", text: "Laboratorio o taller" },
+          { emoji: "🎪", text: "Espacios dinámicos y variados" }
+        ]
+      },
+      {
+        title: "¿Qué materia te resultó más interesante en el colegio?",
+        options: [
+          { emoji: "⚛️", text: "Matemática y Física" },
+          { emoji: "🧪", text: "Química y Biología" },
+          { emoji: "📚", text: "Idiomas y Literatura" },
+          { emoji: "🎭", text: "Arte y Educación Física" }
+        ]
+      },
+      {
+        title: "¿Cuál es tu objetivo profesional principal?",
+        options: [
+          { emoji: "💰", text: "Ganar bien y ser independiente" },
+          { emoji: "🌟", text: "Hacer un impacto positivo" },
+          { emoji: "📈", text: "Crecer y liderar proyectos" },
+          { emoji: "❤️", text: "Disfrutar lo que hago" }
+        ]
+      },
+      {
+        title: "¿Cómo prefieres resolver problemas?",
+        options: [
+          { emoji: "🔍", text: "Investigar y experimentar" },
+          { emoji: "📋", text: "Seguir procesos establecidos" },
+          { emoji: "💡", text: "Pensar diferente e innovar" },
+          { emoji: "🤝", text: "Consultar con otros" }
+        ]
+      },
+      {
+        title: "¿Qué te motiva aprender nuevas cosas?",
+        options: [
+          { emoji: "🎓", text: "El conocimiento en sí mismo" },
+          { emoji: "🛠️", text: "Poder aplicar lo aprendido" },
+          { emoji: "🏆", text: "Competir y destacar" },
+          { emoji: "🌱", text: "Crecer como persona" }
+        ]
+      },
+      {
+        title: "¿Cuál es tu nivel de tolerancia al estrés?",
+        options: [
+          { emoji: "😌", text: "Bajo - prefiero ritmos tranquilos" },
+          { emoji: "⚡", text: "Medio - trabajo bien bajo presión moderada" },
+          { emoji: "🔥", text: "Alto - me activo con desafíos" },
+          { emoji: "🧘", text: "Equilibrado - busco balance" }
+        ]
+      },
+      {
+        title: "¿Qué tipo de habilidades practicas frecuentemente?",
+        options: [
+          { emoji: "🖥️", text: "Programación y desarrollo" },
+          { emoji: "🗣️", text: "Presentación y negociación" },
+          { emoji: "🎬", text: "Edición y diseño multimedia" },
+          { emoji: "📱", text: "Redes sociales y marketing" }
+        ]
+      },
+      {
+        title: "¿En qué campo te gustaría especializar?",
+        options: [
+          { emoji: "🚀", text: "Tecnología e innovación" },
+          { emoji: "🌍", text: "Medio ambiente y sostenibilidad" },
+          { emoji: "💼", text: "Negocios y administración" },
+          { emoji: "🎓", text: "Educación y desarrollo" }
+        ]
       }
-    } catch(e) {
-      console.log('Ollama no disponible, usando fallback local');
-    }
-    
-    // Fallback: usar análisis local basado en respuestas
-    useLocalAnalysis();
-    
-  } catch(error) {
-    console.error('Error:', error);
-    useLocalAnalysis();
-  }
-}
+    ];
 
-function useLocalAnalysis() {
-  // Base de datos de carreras etiquetadas por keywords
-  const careers = [
-    {
-      name: 'Ingeniería en Sistemas Computacionales',
-      tags: ['tecnología', 'lógica', 'innovación', 'programación'],
-      reason: 'Tu perfil muestra fuerte inclinación hacia la tecnología, análisis lógico y resolución de problemas. Ideal para crear soluciones digitales.',
-      unis: 'TEC, UCR, UNED'
-    },
-    {
-      name: 'Ingeniería Civil',
-      tags: ['construcción', 'matemática', 'física', 'proyectos'],
-      reason: 'Tu pensamiento analítico y capacidad de planificación se ajustan perfectamente a proyectos de infraestructura.',
-      unis: 'UCR, TEC, UNED'
-    },
-    {
-      name: 'Medicina',
-      tags: ['ayudar', 'biología', 'ciencia', 'personas'],
-      reason: 'Tu motivación por ayudar a otros y interés en ciencias naturales son ideales para la medicina.',
-      unis: 'UCR, UNA, UNED'
-    },
-    {
-      name: 'Administración de Empresas',
-      tags: ['negocios', 'números', 'liderazgo', 'independiente'],
-      reason: 'Tu orientación hacia los negocios y capacidad de gestión te posicionan bien en administración.',
-      unis: 'UNED, UCR, UNIFIEM'
-    },
-    {
-      name: 'Psicología',
-      tags: ['personas', 'comunicación', 'ayudar', 'comprender'],
-      reason: 'Tu empatía y habilidades de comunicación son fundamentales en esta carrera de alto impacto social.',
-      unis: 'UCR, UNA, UNED'
-    },
-    {
-      name: 'Ingeniería Ambiental',
-      tags: ['medio ambiente', 'sostenibilidad', 'ciencia', 'innovación'],
-      reason: 'Tu interés en el ambiente y pensamiento innovador encajan perfectamente en soluciones sostenibles.',
-      unis: 'EARTH, TEC, UNA'
-    },
-    {
-      name: 'Diseño Gráfico y Multimedia',
-      tags: ['creatividad', 'arte', 'diseño', 'expresión'],
-      reason: 'Tu creatividad y capacidades artísticas son perfectas para profesiones de diseño e innovación visual.',
-      unis: 'UNA, UNED, institutos privados'
-    },
-    {
-      name: 'Enfermería',
-      tags: ['ayudar', 'biología', 'personas', 'salud'],
-      reason: 'Tu vocación de servicio y interés en ciencias de la salud te hacen ideal para esta carrera.',
-      unis: 'UCR, UNA, CAISALAS'
-    },
-    {
-      name: 'Ingeniería en Agronomía',
-      tags: ['naturaleza', 'experimentación', 'sostenibilidad'],
-      reason: 'Tu interés en trabajar al aire libre y en la naturaleza se alinea con esta carrera práctica.',
-      unis: 'UNA, TEC, UCR'
-    },
-    {
-      name: 'Contabilidad',
-      tags: ['números', 'datos', 'procesos', 'negocios'],
-      reason: 'Tu capacidad analítica con números te posiciona bien en finanzas y gestión contable.',
-      unis: 'UNED, UCR, institutos técnicos'
-    },
-    {
-      name: 'Educación',
-      tags: ['enseñanza', 'personas', 'comunicación', 'aprendizaje'],
-      reason: 'Tu interés en educación y capacidad de comunicación hacen de la docencia una opción natural.',
-      unis: 'UNA, UNED, UCR'
-    },
-    {
-      name: 'Marketing Digital',
-      tags: ['marketing', 'redes sociales', 'creatividad', 'comunicación'],
-      reason: 'Tu dominio de redes y pensamiento creativo son exactamente lo que busca el marketing digital.',
-      unis: 'UNED, institutos técnicos, escuelas especializadas'
-    }
-  ];
-  
-  // Calcular puntuaciones
-  const scores = careers.map(career => {
-    let score = 0;
-    let matchedTags = [];
+    const CAREERS_DB = [
+      {
+        name: "Ingeniería en Sistemas Computacionales",
+        keywords: { "tecnología": 3, "lógica": 3, "innovación": 2, "programación": 3, "desarrollo": 3, "datos": 2 },
+        reason: "Tu perfil demuestra una fuerte inclinación hacia la tecnología, análisis lógico y resolución de problemas. Ideal para diseñar soluciones digitales innovadoras.",
+        universities: "TEC, UCR, UNED"
+      },
+      {
+        name: "Ingeniería Civil",
+        keywords: { "matemática": 3, "física": 3, "proyectos": 2, "liderazgo": 2, "impacto": 2 },
+        reason: "Tu pensamiento analítico y capacidad de planificación son perfectos para proyectos de infraestructura de alto impacto social.",
+        universities: "UCR, TEC, UNED"
+      },
+      {
+        name: "Medicina",
+        keywords: { "ayudar": 3, "biología": 3, "ciencia": 2, "impacto": 2, "personas": 2 },
+        reason: "Tu vocación de servicio y profundo interés en ciencias naturales te posicionan para una carrera médica gratificante.",
+        universities: "UCR, UNA, UNED"
+      },
+      {
+        name: "Administración de Empresas",
+        keywords: { "negocios": 3, "liderazgo": 3, "datos": 2, "independiente": 2, "impacto": 1 },
+        reason: "Tu orientación empresarial, liderazgo y capacidad analítica te preparan para gestionar organizaciones innovadoras.",
+        universities: "UNED, UCR, UNIFIEM"
+      },
+      {
+        name: "Psicología",
+        keywords: { "personas": 3, "comunicación": 3, "ayudar": 2, "impacto": 2, "equipo": 2 },
+        reason: "Tu empatía, inteligencia emocional y habilidades comunicativas son fundamentales en esta carrera de alto impacto.",
+        universities: "UCR, UNA, UNED"
+      },
+      {
+        name: "Ingeniería Ambiental",
+        keywords: { "sostenibilidad": 3, "innovación": 2, "impacto": 3, "ciencia": 2, "naturaleza": 2 },
+        reason: "Tu interés en sustentabilidad y pensamiento innovador encajan perfectamente en soluciones ambientales del futuro.",
+        universities: "EARTH, TEC, UNA"
+      },
+      {
+        name: "Diseño Gráfico y Multimedia",
+        keywords: { "creatividad": 3, "arte": 3, "innovación": 2, "expresión": 2, "contenido": 2 },
+        reason: "Tu creatividad y capacidades artísticas te hacen ideal para profesiones de diseño e innovación visual de clase mundial.",
+        universities: "UNA, UNED, institutos privados"
+      },
+      {
+        name: "Enfermería",
+        keywords: { "ayudar": 3, "personas": 2, "biología": 2, "impacto": 2, "salud": 2 },
+        reason: "Tu vocación humanitaria y interés en ciencias de la salud te preparan para una carrera de servicio directo.",
+        universities: "UCR, UNA, CAISALAS"
+      },
+      {
+        name: "Ingeniería en Agronomía",
+        keywords: { "naturaleza": 3, "experimentación": 2, "sostenibilidad": 2, "impacto": 2 },
+        reason: "Tu conexión con la naturaleza y mentalidad sostenible se alinean con esta carrera práctica y transformadora.",
+        universities: "UNA, TEC, UCR"
+      },
+      {
+        name: "Contabilidad",
+        keywords: { "datos": 3, "números": 3, "precisión": 2, "negocios": 2, "análisis": 2 },
+        reason: "Tu capacidad analítica numérica y atención al detalle te posicionan en finanzas corporativas de impacto.",
+        universities: "UNED, UCR, institutos técnicos"
+      },
+      {
+        name: "Educación",
+        keywords: { "personas": 3, "comunicación": 3, "impacto": 2, "enseñanza": 2, "equipo": 2 },
+        reason: "Tu pasión por la enseñanza y capacidad de inspirar te hacen un candidato excepcional para transformar vidas.",
+        universities: "UNA, UNED, UCR"
+      },
+      {
+        name: "Marketing Digital",
+        keywords: { "creatividad": 2, "comunicación": 3, "datos": 2, "innovación": 2, "contenido": 2 },
+        reason: "Tu dominio creativo, comunicacional y de redes digitales te posiciona como experto en marketing moderno.",
+        universities: "UNED, institutos técnicos, PUCE"
+      },
+      {
+        name: "Derecho",
+        keywords: { "comunicación": 2, "liderazgo": 2, "análisis": 2, "impacto": 3, "justicia": 2 },
+        reason: "Tu capacidad de análisis crítico y pasión por justicia social te preparan para impacto legal significativo.",
+        universities: "UCR, UNA, UNED"
+      },
+      {
+        name: "Ingeniería Eléctrica",
+        keywords: { "tecnología": 3, "matemática": 3, "física": 2, "innovación": 2, "precisión": 2 },
+        reason: "Tu dominio en ciencias exactas y tecnología te califica para diseñar sistemas eléctricos del futuro.",
+        universities: "UCR, TEC, UNED"
+      },
+      {
+        name: "Biología Marina",
+        keywords: { "ciencia": 3, "naturaleza": 3, "observación": 2, "sostenibilidad": 2, "experimentación": 2 },
+        reason: "Tu fascinación por la naturaleza y el océano se funde con rigor científico en esta carrera innovadora.",
+        universities: "UNA, UNED, institutos especializados"
+      }
+    ];
 
-    answers.forEach((ansIndex, qIndex) => {
-      if (ansIndex === undefined) return;
-      const q = questions[qIndex];
-      if (!q || !q.options[ansIndex]) return;
-      const answer = q.options[ansIndex].text.toLowerCase();
-      career.tags.forEach(tag => {
-        if (answer.includes(tag)) {
-          score += 1;
-          if (!matchedTags.includes(tag)) matchedTags.push(tag);
+    const ADVICE_TEMPLATES = [
+      "Tu perfil refleja una combinación única de habilidades y motivaciones. Te recomendamos investigar profundamente cada opción, visitar universidades, conectar con profesionales del área y realizar voluntariados para confirmar tu elección. Tu pasión será tu mejor guía en este viaje profesional.",
+      "Tus respuestas revelan una verdadera vocación orientada al crecimiento integral. Explora estas carreras a través de charlas informativas, prácticas estudiantiles y mentorías con profesionales. Recuerda que la mejor carrera es aquella que te permite crecer constantemente.",
+      "Tu potencial es evidente en cada respuesta. Encuentra la intersección entre lo que amas, lo que sabes hacer bien y lo que el mundo necesita. Mantén apertura mental, cultiva habilidades complementarias y confía en tu proceso de decisión.",
+      "Las carreras recomendadas se alinean perfectamente con tu perfil vocacional. Te sugiero conectar con profesionales activos en estos campos, participar en ferias vocacionales y talleres especializados. Tu futuro depende de decisiones informadas y apasionadas.",
+      "Tu análisis vocacional muestra fortalezas destacables en múltiples áreas. La clave está en encontrar la carrera donde tu pasión, tus habilidades naturales y el impacto social convergen. Sigue explorando y aprendiendo continuamente."
+    ];
+
+    // ====================================
+    // APLICACIÓN PRINCIPAL (ARQUITECTURA)
+    // ====================================
+
+    const app = {
+      state: {
+        currentQuestion: 0,
+        answers: [],
+        selectedOption: null
+      },
+
+      // Inicialización
+      init() {
+        this.setupParticles();
+        this.attachEventListeners();
+      },
+
+      setupParticles() {
+        const container = document.getElementById('particles');
+        const particleCount = window.innerWidth > 768 ? 30 : 15;
+        
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.cssText = `
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation-duration: ${15 + Math.random() * 20}s;
+            animation-delay: ${Math.random() * 5}s;
+          `;
+          container.appendChild(particle);
         }
-      });
-    });
+      },
 
-    return { ...career, score, matchedTags };
-  });
-  
-  // Obtener top 4
-  const topCareers = scores.sort((a, b) => b.score - a.score).slice(0, 4);
-  
-  // Generar consejo
-  const mainMotivations = getMainMotivations();
-  const advice = generateAdvice(mainMotivations);
-  
-  displayResults(topCareers, advice);
-}
+      attachEventListeners() {
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' && this.state.selectedOption !== null) this.nextQuestion();
+          if (e.key === 'ArrowLeft') this.previousQuestion();
+        });
+      },
 
-function getMainMotivations() {
-  const motivations = [];
-  answers.forEach((ans, qIndex) => {
-    const q = questions[qIndex];
-    if (!q || ans === undefined || !q.options[ans]) {
-      motivations.push('Sin respuesta');
-    } else {
-      motivations.push(q.options[ans].text);
-    }
-  });
-  return motivations;
-}
+      // Flujo del cuestionario
+      startQuiz() {
+        this.state = { currentQuestion: 0, answers: [], selectedOption: null };
+        this.showScreen('quiz');
+        this.displayQuestion();
+      },
 
-function generateAdvice(motivations) {
-  const templates = [
-    "Tu perfil muestra una combinación única de habilidades. No dudes en explorar estas carreras mediante jornadas de universidades, charlas con profesionales y prácticas. ¡Tu futuro es prometedor!",
-    "Tus respuestas revelan una verdadera vocación. Te recomendamos que investigues más sobre estas carreras en los sitios de las universidades y tomes decisiones informadas. ¡Adelante!",
-    "Tu potencial es claro. Recuerda que la carrera perfecta es la que te apasiona y te permite crecer. Mantén tu mente abierta y explora todas las posibilidades.",
-    "Las carreras recomendadas se ajustan a tu perfil. Te sugerimos conectar con mentores en estos campos para confirmar tu elección. ¡Éxito en tu camino!"
-  ];
-  
-  return templates[Math.floor(Math.random() * templates.length)];
-}
+      displayQuestion() {
+        const q = QUESTIONS[this.state.currentQuestion];
+        document.getElementById('questionNumber').textContent = 
+          `Pregunta ${this.state.currentQuestion + 1} de ${QUESTIONS.length}`;
+        document.getElementById('questionText').textContent = q.title;
 
-function displayResults(careers, advice) {
-  const container = document.getElementById('resultsContainer');
-  container.innerHTML = '';
-  
-  careers.forEach((career, index) => {
-    const card = document.createElement('div');
-    card.className = 'result-card';
-    card.innerHTML = `
-      <div class="result-number">${index + 1}</div>
-      <div class="result-title">${career.name}</div>
-      <div class="result-reason">${career.reason}</div>
-      <div class="result-unis">📍 ${career.unis}</div>
-    `;
-    container.appendChild(card);
-  });
-  
-  document.getElementById('adviceContainer').innerHTML = `<strong>💬 Tu recomendación personal:</strong><br><br>${advice}`;
-  
-  showScreen('results');
-}
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
 
-function shareResults() {
-  const careerNames = Array.from(document.querySelectorAll('.result-title'))
-    .map(el => el.textContent)
-    .join(', ');
-  
-  const text = `Acabo de descubrir mis carreras ideales en Ruta Vocacional: ${careerNames}. ¡Pruébalo tú también! 🌱`;
-  
-  if(navigator.share) {
-    navigator.share({
-      title: 'Ruta Vocacional',
-      text: text
-    });
-  } else {
-    alert(`Tus carreras recomendadas:\n\n${careerNames}\n\n${text}`);
-  }
-}
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement('button');
+          btn.className = `option-btn ${this.state.selectedOption === idx ? 'selected' : ''}`;
+          btn.innerHTML = `<span class="emoji">${opt.emoji}</span><span class="text">${opt.text}</span>`;
+          btn.onclick = () => this.selectOption(idx);
+          container.appendChild(btn);
+        });
 
-function restartQuiz() {
-  showScreen('welcome');
-  currentQuestion = 0;
-  answers = [];
-  selectedOption = null;
-}
+        this.updateProgress();
+        this.updateButtons();
+      },
 
-function showScreen(screenId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(screenId).classList.add('active');
-}
+      selectOption(idx) {
+        this.state.selectedOption = idx;
+        this.displayQuestion();
+      },
 
-// Inicializar
-initParticles();
-</script>
+      nextQuestion() {
+        if (this.state.selectedOption === null) return;
+
+        this.state.answers[this.state.currentQuestion] = this.state.selectedOption;
+
+        if (this.state.currentQuestion < QUESTIONS.length - 1) {
+          this.state.currentQuestion++;
+          this.state.selectedOption = this.state.answers[this.state.currentQuestion] ?? null;
+          this.displayQuestion();
+        } else {
+          this.analyzeAnswers();
+        }
+      },
+
+      previousQuestion() {
+        if (this.state.currentQuestion > 0) {
+          this.state.answers[this.state.currentQuestion] = this.state.selectedOption;
+          this.state.currentQuestion--;
+          this.state.selectedOption = this.state.answers[this.state.currentQuestion] ?? null;
+          this.displayQuestion();
+        }
+      },
+
+      updateProgress() {
+        const percent = ((this.state.currentQuestion + 1) / QUESTIONS.length) * 100;
+        document.getElementById('progressFill').style.width = percent + '%';
+      },
+
+      updateButtons() {
+        document.getElementById('prevBtn').style.display = 
+          this.state.currentQuestion > 0 ? 'block' : 'none';
+        document.getElementById('nextBtn').textContent = 
+          this.state.currentQuestion === QUESTIONS.length - 1 ? '✓ Ver Resultados' : 'Siguiente →';
+        document.getElementById('nextBtn').disabled = this.state.selectedOption === null;
+      },
+
+      // Análisis y resultados
+      analyzeAnswers() {
+        this.state.answers[this.state.currentQuestion] = this.state.selectedOption;
+        this.showScreen('loading');
+        
+        // Simular análisis IA con pequeño delay
+        setTimeout(() => this.performAnalysis(), 800);
+      },
+
+      performAnalysis() {
+        const userProfile = this.extractUserProfile();
+        const scoredCareers = this.scoreCareers(userProfile);
+        const topCareers = scoredCareers.slice(0, 4);
+        const advice = this.generateAdvice(userProfile);
+
+        this.displayResults(topCareers, advice);
+      },
+
+      extractUserProfile() {
+        return this.state.answers.map((ansIdx, qIdx) => {
+          if (ansIdx === undefined) return '';
+          return QUESTIONS[qIdx]?.options[ansIdx]?.text.toLowerCase() || '';
+        });
+      },
+
+      scoreCareers(profile) {
+        return CAREERS_DB.map(career => {
+          let score = 0;
+
+          profile.forEach(answer => {
+            if (!answer) return;
+            Object.entries(career.keywords).forEach(([keyword, weight]) => {
+              if (answer.includes(keyword.toLowerCase())) {
+                score += weight;
+              }
+            });
+          });
+
+          return { ...career, score };
+        }).sort((a, b) => b.score - a.score);
+      },
+
+      generateAdvice(profile) {
+        return ADVICE_TEMPLATES[Math.floor(Math.random() * ADVICE_TEMPLATES.length)];
+      },
+
+      displayResults(careers, advice) {
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = careers.map((c, idx) => `
+          <div class="result-card">
+            <div class="result-rank">${idx + 1}</div>
+            <div class="result-title">${c.name}</div>
+            <div class="result-reason">${c.reason}</div>
+            <div class="result-unis">📍 ${c.universities}</div>
+          </div>
+        `).join('');
+
+        document.getElementById('adviceContainer').innerHTML = `
+          <div class="advice-title">💬 Tu Análisis Personalizado</div>
+          <div class="advice-text">${advice}</div>
+        `;
+
+        this.showScreen('results');
+      },
+
+      shareResults() {
+        const careers = Array.from(document.querySelectorAll('.result-title'))
+          .map(el => el.textContent)
+          .join(', ');
+
+        const text = `Acabo de descubrir mis carreras ideales en Ruta Vocacional: ${careers}. ¡Descubre la tuya! 🌱`;
+
+        if (navigator.share) {
+          navigator.share({ title: 'Ruta Vocacional', text });
+        } else {
+          alert(`Mis carreras recomendadas:\n${careers}\n\n${text}`);
+        }
+      },
+
+      restartQuiz() {
+        this.state = { currentQuestion: 0, answers: [], selectedOption: null };
+        this.showScreen('welcome');
+      },
+
+      showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+      }
+    };
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => app.init());
+  </script>
 </body>
 </html>
