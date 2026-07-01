@@ -538,7 +538,7 @@ function analyzeAnswers() {
 function createAnalysisPrompt() {
   const answerSummary = answers.map((ans, i) => {
     const question = questions[i];
-    const selectedText = question.options[ans].text;
+    const selectedText = (ans !== undefined && question && question.options[ans]) ? question.options[ans].text : 'Sin respuesta';
     return `Pregunta ${i+1}: "${question.title}" - Respuesta: "${selectedText}"`;
   }).join('\n');
   
@@ -679,17 +679,20 @@ function useLocalAnalysis() {
   const scores = careers.map(career => {
     let score = 0;
     let matchedTags = [];
-    
+
     answers.forEach((ansIndex, qIndex) => {
-      const answer = questions[qIndex].options[ansIndex].text.toLowerCase();
+      if (ansIndex === undefined) return;
+      const q = questions[qIndex];
+      if (!q || !q.options[ansIndex]) return;
+      const answer = q.options[ansIndex].text.toLowerCase();
       career.tags.forEach(tag => {
-        if(answer.includes(tag)) {
+        if (answer.includes(tag)) {
           score += 1;
-          if(!matchedTags.includes(tag)) matchedTags.push(tag);
+          if (!matchedTags.includes(tag)) matchedTags.push(tag);
         }
       });
     });
-    
+
     return { ...career, score, matchedTags };
   });
   
@@ -706,7 +709,12 @@ function useLocalAnalysis() {
 function getMainMotivations() {
   const motivations = [];
   answers.forEach((ans, qIndex) => {
-    motivations.push(questions[qIndex].options[ans].text);
+    const q = questions[qIndex];
+    if (!q || ans === undefined || !q.options[ans]) {
+      motivations.push('Sin respuesta');
+    } else {
+      motivations.push(q.options[ans].text);
+    }
   });
   return motivations;
 }
