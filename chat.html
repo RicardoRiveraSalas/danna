@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat con Gemini</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 10px; }
+        #chatbox { height: 300px; border: 1px solid #ccc; overflow-y: scroll; padding: 10px; margin-bottom: 10px; }
+        #user-input { width: 80%; padding: 8px; }
+        #send-btn { width: 15%; padding: 8px; }
+    </style>
+</head>
+<body>
+
+    <h2>Mi Chatbot IA</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="user-input" placeholder="Escribe un mensaje...">
+    <button id="send-btn">Enviar</button>
+
+    <!-- Importar el SDK de Google Gen AI para la web -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.run/@google/genai"
+        }
+      }
+    </script>
+
+    <script type="module">
+        import { GoogleGenAI } from '@google/genai';
+
+        // 🛑 RECUERDA: No subas este archivo a GitHub con la clave expuesta.
+        const API_KEY = "TU_API_KEY_AQUÍ"; 
+        const ai = new GoogleGenAI({ apiKey: API_KEY });
+
+        const chatbox = document.getElementById('chatbox');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        sendBtn.addEventListener('click', async () => {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Mostrar mensaje del usuario
+            chatbox.innerHTML += `<p><strong>Tú:</strong> ${message}</p>`;
+            userInput.value = '';
+
+            try {
+                // Llamar al modelo Gemini 2.5 Flash (ideal para texto rápido)
+                const response = await ai.models.generateContent({
+                    model: 'gemini-2.5-flash',
+                    contents: message,
+                });
+
+                // Mostrar respuesta de la IA
+                chatbox.innerHTML += `<p><strong>IA:</strong> ${response.text}</p>`;
+                chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll al final
+            } catch (error) {
+                console.error(error);
+                chatbox.innerHTML += `<p style="color:red;"><strong>Error:</strong> No se pudo obtener respuesta.</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
