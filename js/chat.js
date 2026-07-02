@@ -48,7 +48,7 @@ function renderMessage(text, role, ts) {
   const avatar = document.createElement('div');
   avatar.className = 'msg-avatar';
   if (role === 'user') {
-    avatar.textContent = '\U0001f464';
+    avatar.textContent = '\u{1F464}';
   } else {
     const img = document.createElement('img');
     img.src = 'fotos/danna.png';
