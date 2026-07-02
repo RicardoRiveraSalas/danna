@@ -210,7 +210,13 @@ footer{
 import { GoogleGenAI } from '@google/genai';
 
 const API_KEY = "GEMINI_API_KEY_PLACEHOLDER";
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+let ai;
+
+try {
+  ai = new GoogleGenAI({ apiKey: API_KEY });
+} catch(e) {
+  ai = null;
+}
 
 const messages = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
@@ -255,6 +261,23 @@ function setLoading(loading) {
   }
 }
 
+function localReply(text) {
+  const t = text.toLowerCase();
+  if (t.includes('hola') || t.includes('buenas')) {
+    return '¡Hola! ¿En qué puedo ayudarte? Pregúntame sobre carreras, estudios o cualquier duda.';
+  }
+  if (t.includes('carrera') || t.includes('universidad') || t.includes('estudiar')) {
+    return 'Para elegir carrera te recomiendo:\n1. Identifica tus fortalezas\n2. Investiga el campo laboral en Costa Rica\n3. Habla con profesionales\n\nPrueba la Ruta Vocacional 🌱 desde la página principal.';
+  }
+  if (t.includes('gracias')) {
+    return '¡De nada! 😊 Aquí estoy para lo que necesites.';
+  }
+  if (t.includes('danna') || t.includes('eres') || t.includes('quien')) {
+    return 'Soy un asistente creado para ayudarte. Esta página es de Danna Rivera, estudiante de Diseño en CEDES Don Bosco Costa Rica.';
+  }
+  return 'Interesante pregunta. Por ahora no tengo conexión con Gemini para responder con precisión, pero puedes explorar la Ruta Vocacional 🌱 en la página principal mientras configuro una API key válida.';
+}
+
 async function sendMessage() {
   const text = userInput.value.trim();
   if (!text) return;
@@ -263,14 +286,26 @@ async function sendMessage() {
   addMessage(text, 'user');
   setLoading(true);
 
+  if (!ai || API_KEY === 'GEMINI_API_KEY_PLACEHOLDER') {
+    await new Promise(r => setTimeout(r, 600));
+    addMessage(localReply(text), 'bot');
+    setLoading(false);
+    return;
+  }
+
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
       contents: text,
     });
     addMessage(response.text || 'Sin respuesta.', 'bot');
   } catch (e) {
-    addMessage('Error al conectar: ' + e.message, 'bot');
+    const msg = e.message || '';
+    if (msg.includes('API_KEY_INVALID') || msg.includes('not valid')) {
+      addMessage('🔑 API key inválida. Usando respuesta local.\n\n' + localReply(text), 'bot');
+    } else {
+      addMessage('Error: ' + msg, 'bot');
+    }
   } finally {
     setLoading(false);
   }
