@@ -131,19 +131,19 @@ async function startWebLLM() {
 
     const { MLCEngine } = await import('https://esm.run/@mlc-ai/web-llm');
 
-    engine = new MLCEngine();
-
-    engine.setInitProgressCallback((report) => {
-      if (report.progress && report.progress > 0) {
-        const pct = Math.min(99, Math.round(report.progress * 100));
-        dispatch('downloading', `Descargando IA local... ${pct}% (No recargues la página).`);
-      } else if (report.text) {
-        dispatch('downloading', report.text);
+    engine = new MLCEngine({
+      initProgressCallback: (report) => {
+        if (report.progress && report.progress > 0) {
+          const pct = Math.min(99, Math.round(report.progress * 100));
+          dispatch('downloading', `Descargando IA local... ${pct}% (No recargues la página).`);
+        } else if (report.text) {
+          dispatch('downloading', report.text);
+        }
       }
     });
 
     dispatch('downloading', 'Iniciando descarga del modelo (~700MB la primera vez)...');
-    await engine.reload('Llama-3.2-1B-Instruct-q4f16_0-MLC');
+    await engine.reload('Llama-3.2-1B-Instruct-q4f16_1-MLC');
 
     modelReady = true;
     dispatch('ready', '');
