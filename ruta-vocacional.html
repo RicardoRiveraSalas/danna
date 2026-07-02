@@ -21,14 +21,7 @@
     <div class="card">
       <!-- Pantalla de Bienvenida -->
       <div class="screen active" id="welcome">
-        <svg class="welcome-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="100" cy="80" r="35" fill="#ff69b4"/>
-          <circle cx="90" cy="75" r="4" fill="#fff"/>
-          <circle cx="110" cy="75" r="4" fill="#fff"/>
-          <path d="M 90 85 Q 100 92 110 85" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
-          <path d="M 75 110 L 70 150 M 100 115 L 100 155 M 125 110 L 130 150" stroke="#00bfff" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="75" cy="65" r="8" fill="#ffff00" opacity="0.6"/>
-        </svg>
+        <img src="fotos/danna.png" alt="Danna Rivera" class="welcome-avatar">
         <h1 class="question-title">¡Hola! 👋</h1>
         <p class="welcome-text">
           Te guiaremos a través de un cuestionario inteligente para identificar las carreras universitarias y técnicas que mejor se ajustan a tu perfil, habilidades y aspiraciones.
@@ -77,14 +70,17 @@
 
   <footer>
     <span class="footer-name">Danna Rivera</span>
+    <span class="footer-details">Estudiante de Diseño · CEDES Don Bosco Costa Rica</span>
     <div class="nav-buttons">
       <a href="index.html" class="ruta-btn">🏠 Inicio</a>
       <a href="chat.html" class="ruta-btn">🤖 Chat IA</a>
+      <a href="juego.html" class="ruta-btn">🎨 Pintar</a>
     </div>
     <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)">
       <option value="modern">Moderno</option>
       <option value="retro">Win 3.1</option>
     </select>
+    <span class="footer-year">© 2026</span>
   </footer>
   <script src="js/ruta-vocacional.js"></script>
 </body>

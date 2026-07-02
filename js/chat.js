@@ -20,7 +20,14 @@ function addMessage(text, role) {
 
   const avatar = document.createElement('div');
   avatar.className = 'msg-avatar';
-  avatar.textContent = role === 'user' ? '👤' : '🤖';
+  if(role === 'user'){
+    avatar.textContent = '👤';
+  } else {
+    const img = document.createElement('img');
+    img.src = 'fotos/danna.png';
+    img.className = 'avatar-img';
+    avatar.appendChild(img);
+  }
 
   const bubble = document.createElement('div');
   bubble.className = 'msg-bubble';
@@ -42,9 +49,16 @@ function setLoading(loading) {
   if (loading) {
     const div = document.createElement('div');
     div.className = 'msg bot';
+    const avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    const img = document.createElement('img');
+    img.src = 'fotos/danna.png';
+    img.className = 'avatar-img';
+    avatar.appendChild(img);
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble typing';
     bubble.innerHTML = '<span></span><span></span><span></span>';
+    div.appendChild(avatar);
     div.appendChild(bubble);
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;

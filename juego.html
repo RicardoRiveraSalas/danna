@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Lumi - Juego de pintar cuadros por números. Elige colores y completa el dibujo.">
+<meta name="theme-color" content="#302b63">
+<title>Lumi · Pintar Cuadros</title>
+<link rel="stylesheet" href="css/juego.css">
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <div class="logo-wrap">
+      <img src="fotos/danna.png" alt="Danna Rivera" class="avatar-mini">
+      <div class="logo">🎨 LUMI</div>
+    </div>
+    <p class="subtitle">Pintar Cuadros</p>
+  </div>
+
+  <div class="card">
+    <div class="level-bar" id="levelBar"></div>
+
+    <div class="canvas-wrap">
+      <div class="canvas" id="canvas"></div>
+    </div>
+
+    <div class="palette" id="palette"></div>
+
+    <p class="status" id="status">Selecciona un color y pinta las zonas</p>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-name">Danna Rivera</span>
+  <span class="footer-details">Estudiante de Diseño · CEDES Don Bosco Costa Rica</span>
+  <div class="nav-buttons">
+    <a href="index.html" class="ruta-btn">🏠 Inicio</a>
+    <a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
+    <a href="chat.html" class="ruta-btn">🤖 Chat IA</a>
+  </div>
+  <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)">
+    <option value="modern">Moderno</option>
+    <option value="retro">Win 3.1</option>
+  </select>
+  <span class="footer-year">© 2026</span>
+</footer>
+<script src="js/juego.js"></script>
+</body>
+</html>
