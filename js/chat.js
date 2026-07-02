@@ -79,8 +79,9 @@ function updateBadge(backend, status) {
   if (!iaBadge) return;
   const map = {
     gemini: { icon: '\u2728', label: 'Gemini Nano' },
-    webllm: { icon: '\U0001f9e0', label: 'WebLLM' },
-    off: { icon: '\U0001f310', label: 'Sin IA' }
+    webllm: { icon: '\u{1F9E0}', label: 'WebLLM' },
+    transformers: { icon: '\u{1F916}', label: 'Transformers.js' },
+    off: { icon: '\u{1F310}', label: 'Sin IA' }
   };
   let cls, text;
   if (status === 'loading' || status === 'downloading') {
@@ -146,6 +147,8 @@ window.addEventListener('ai-status', (e) => {
       setTimeout(() => addMessage(window.__ai.prompts.readyGemini, 'bot'), 400);
     } else if (message === 'webllm') {
       setTimeout(() => addMessage(window.__ai.prompts.readyWebLLM, 'bot'), 400);
+    } else if (message === 'transformers') {
+      setTimeout(() => addMessage(window.__ai.prompts.readyTransformers, 'bot'), 400);
     }
   } else if (status === 'error') {
     statusBar.style.display = 'none';
@@ -278,6 +281,7 @@ async function init() {
   if (!initial) {
     if (available.gemini) initial = 'gemini';
     else if (available.webllm) initial = 'webllm';
+    else if (available.transformers) initial = 'transformers';
     else initial = 'off';
   }
 

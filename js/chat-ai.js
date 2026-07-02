@@ -16,14 +16,15 @@ No solo des respuestas, sino que acompannes al estudiante en su proceso de apren
 3. Manejo de errores: nunca digas "estas mal". Usa frases como "Buena intuicion! Vamos a revisar ese detalle desde otro angulo...".
 4. Si la pregunta es muy extensa, sugiere dividirla en partes.
 5. Si no sabes la respuesta, dilo honestamente y sugiere fuentes confiables. Nunca inventes datos.
-6. Tono motivador pero realista. Usa emojis con moderacion ( , , , ). Usa saltos de linea, negritas y vinetas para facilitar lectura.
+6. Tono motivador pero realista. Usa emojis con moderacion. Usa saltos de linea, negritas y vinetas para facilitar lectura.
 7. Contexto: eres una IA local privada que funciona completamente en el navegador. Este sitio es de Danna Rivera, estudiante de Diseno en CEDES Don Bosco, Costa Rica.
 8. Tienes memoria conversacional: retoma temas anteriores si el estudiante vuelve a preguntar.
 `,
   welcome: `
 Bienvenido! Soy tu asesor educativo. Arriba puedes seleccionar el motor de IA que prefieras:
 - **Gemini Nano**  (recomendado) — IA integrada en Chrome, sin descargas.
-- **WebLLM**  — modelo Llama 3.2 de ~700MB que se descarga una sola vez.
+- **WebLLM**  — modelo Llama 3.2 de ~700MB via WebGPU.
+- **Transformers.js**  — modelos via Hugging Face (WebGPU o CPU).
 - **Sin IA** — solo respuestas predefinidas.
 
 Elige el que mas te guste y empieza a preguntar!
@@ -33,6 +34,9 @@ Elige el que mas te guste y empieza a preguntar!
 `,
   readyWebLLM: `
  **WebLLM listo!** El modelo Llama 3.2 se ha cargado en tu navegador. Todo funciona localmente, sin enviar datos a internet. 
+`,
+  readyTransformers: `
+ **Transformers.js listo!** Modelo Qwen2-0.5B cargado via Hugging Face. Funciona con WebGPU o CPU. 
 `
 };
 
@@ -122,7 +126,7 @@ const backends = {
   webllm: {
     id: 'webllm',
     name: 'WebLLM',
-    icon: '\U0001f9e0',
+    icon: '\u{1F9E0}',
     async check() {
       return !!navigator.gpu;
     },
@@ -181,6 +185,65 @@ const backends = {
         return reply.choices[0]?.message?.content?.trim() || null;
       } catch (err) {
         console.error('Error WebLLM:', err);
+        return null;
+      }
+    }
+  },
+
+  transformers: {
+    id: 'transformers',
+    name: 'Transformers.js',
+    icon: '\u{1F916}',
+    _pipeline: null,
+    _loading: false,
+    async check() {
+      return true;
+    },
+    async start() {
+      if (this._pipeline || this._loading) return;
+      this._loading = true;
+      dispatch('downloading', 'Cargando Transformers.js...');
+      try {
+        const { pipeline } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers');
+        dispatch('downloading', 'Descargando modelo Qwen2-0.5B (~500MB la primera vez)...');
+        this._pipeline = await pipeline('text-generation', 'Xenova/Qwen2-0.5B-Instruct', {
+          dtype: 'q4',
+          progress_callback: (p) => {
+            if (p.status === 'progress') {
+              dispatch('downloading', `Descargando modelo... ${Math.round(p.progress)}%`);
+            }
+          }
+        });
+        dispatch('ready', 'transformers');
+      } catch (err) {
+        console.error('Error Transformers:', err);
+        dispatch('error', 'Error al cargar Transformers.js: ' + (err.message || ''));
+      } finally {
+        this._loading = false;
+      }
+    },
+    get isReady() { return !!this._pipeline; },
+    get isLoading() { return this._loading; },
+    async generateReply(text, history) {
+      if (!this._pipeline) return null;
+      try {
+        let prompt = '<|system|>\n' + PROMPTS.systemPersonality + '\n<|end|>\n';
+        if (history && history.length > 0) {
+          for (const m of history.slice(-6)) {
+            const role = m.role === 'user' ? 'user' : 'assistant';
+            prompt += `<|${role}|>\n${m.text}\n<|end|>\n`;
+          }
+        }
+        prompt += `<|user|>\n${text}\n<|end|>\n<|assistant|>\n`;
+        const result = await this._pipeline(prompt, {
+          max_new_tokens: 500,
+          temperature: 0.7,
+          do_sample: true,
+          return_full_text: false
+        });
+        return result[0]?.generated_text?.trim() || null;
+      } catch (err) {
+        console.error('Error Transformers generando:', err);
         return null;
       }
     }
