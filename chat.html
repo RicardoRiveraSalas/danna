@@ -414,7 +414,7 @@ footer{
     <h2>🔑 Configurar API Key</h2>
     <p>Ingresa tu API key de Google Gemini para habilitar el chat. La key se guarda solo en tu navegador.</p>
     <label>API Key de Gemini</label>
-    <input type="password" id="apiKeyInput" placeholder="AIza..." oninput="clearStatus()">
+    <input type="password" id="apiKeyInput" placeholder="Pega tu API key aquí" oninput="clearStatus()">
     <button class="btn" onclick="saveApiKey()">Guardar</button>
     <div class="status" id="apiStatus"></div>
   </div>
@@ -576,17 +576,18 @@ function addMessage(text, role) {
 }
 
 function formatText(text) {
-  return text
+  let html = text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`{3}([\s\S]*?)`{3}/g, '<pre><code>$1</code></pre>')
+    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
     .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
-    .replace(/<\/ul>\s*<ul>/g, '')
     .replace(/\n/g, '<br>');
+  html = html.replace(/(?:<br>)*<li>/g, '<li>');
+  html = html.replace(/(<li>.*?<\/li>)(?!.*<li>)/g, '<ul>$1</ul>');
+  html = html.replace(/<\/ul>\s*<ul>/g, '');
+  return html;
 }
 
 function setLoading(loading) {
