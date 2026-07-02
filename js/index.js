@@ -18,9 +18,12 @@ const images=[
   'fotos/img25.png','fotos/img26.png','fotos/img27.png','fotos/img28.png'
 ];
 const container=document.getElementById('gallery');
+let currentIndex=0;
+
 images.forEach((src,i)=>{
   const div=document.createElement('div');
   div.className='seed';
+  div.dataset.index=i;
   const x=Math.random()*90;
   const y=Math.random()*85;
   const size=60+Math.random()*50;
@@ -38,16 +41,54 @@ images.forEach((src,i)=>{
   div.appendChild(img);
   container.appendChild(div);
 });
+
 const modal=document.getElementById('modal');
+const modalBody=document.getElementById('modalBody');
 const modalImg=document.getElementById('modalImg');
+const modalCounter=document.getElementById('modalCounter');
+const modalPrev=document.getElementById('modalPrev');
+const modalNext=document.getElementById('modalNext');
+
+function openModal(idx){
+  currentIndex=idx;
+  modalImg.src=images[currentIndex];
+  modal.classList.add('active');
+  modalCounter.textContent=(currentIndex+1)+' / '+images.length;
+}
+
+function closeModal(){
+  modal.classList.remove('active');
+  modalImg.src='';
+}
+
+function prevPhoto(){
+  currentIndex=(currentIndex-1+images.length)%images.length;
+  modalImg.src=images[currentIndex];
+  modalCounter.textContent=(currentIndex+1)+' / '+images.length;
+}
+
+function nextPhoto(){
+  currentIndex=(currentIndex+1)%images.length;
+  modalImg.src=images[currentIndex];
+  modalCounter.textContent=(currentIndex+1)+' / '+images.length;
+}
+
 container.addEventListener('click',e=>{
   const seed=e.target.closest('.seed');
   if(!seed)return;
-  modalImg.src=seed.querySelector('img').src;
-  modal.classList.add('active');
-});
-modal.addEventListener('click',()=>{
-  modal.classList.remove('active');
-  modalImg.src='';
+  openModal(parseInt(seed.dataset.index));
 });
 
+modal.addEventListener('click',e=>{
+  if(e.target===modal)closeModal();
+});
+modalBody.addEventListener('click',e=>e.stopPropagation());
+modalPrev.addEventListener('click',prevPhoto);
+modalNext.addEventListener('click',nextPhoto);
+
+document.addEventListener('keydown',e=>{
+  if(!modal.classList.contains('active'))return;
+  if(e.key==='ArrowRight')nextPhoto();
+  if(e.key==='ArrowLeft')prevPhoto();
+  if(e.key==='Escape')closeModal();
+});

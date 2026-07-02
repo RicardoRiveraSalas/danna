@@ -83,13 +83,71 @@ body{
   animation:fadeIn .2s ease
 }
 .modal-overlay.active{display:flex}
+.modal-body{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:default;
+  max-width:94vw;
+  max-height:94vh
+}
 .modal-img{
-  max-width:90vw;
-  max-height:90vh;
+  max-width:calc(94vw - 100px);
+  max-height:94vh;
   border-radius:12px;
   box-shadow:0 0 60px rgba(255,255,255,.15);
   object-fit:contain;
+  pointer-events:none;
+  display:block
+}
+.modal-nav{
+  position:absolute;
+  top:50%;transform:translateY(-50%);
+  width:48px;height:48px;
+  border-radius:50%;
+  background:rgba(0,0,0,.5);
+  color:#fff;
+  border:2px solid rgba(255,255,255,.2);
+  font-size:1.8em;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .25s ease;
+  z-index:10;
+  line-height:1;
+  pointer-events:auto;
+  user-select:none
+}
+.modal-nav:hover{
+  background:rgba(0,0,0,.8);
+  border-color:rgba(255,255,255,.5);
+  transform:translateY(-50%) scale(1.1)
+}
+.modal-prev{left:-56px}
+.modal-next{right:-56px}
+.modal-counter{
+  position:absolute;
+  bottom:-36px;
+  left:50%;transform:translateX(-50%);
+  color:#fff;
+  font-size:.9em;
+  font-weight:600;
+  letter-spacing:1px;
+  opacity:.7;
+  white-space:nowrap;
   pointer-events:none
+}
+@media(max-width:700px){
+  .modal-img{max-width:calc(94vw - 70px)}
+  .modal-nav{width:36px;height:36px;font-size:1.3em}
+  .modal-prev{left:-40px}
+  .modal-next{right:-40px}
+  .modal-counter{bottom:-30px;font-size:.8em}
+}
+@media(max-width:450px){
+  .modal-nav{width:32px;height:32px;font-size:1.1em}
+  .modal-prev{left:-34px}
+  .modal-next{right:-34px}
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .nav-buttons{
@@ -179,6 +237,20 @@ footer{
 [data-theme="retro"] .modal-img{
   border:3px solid;border-color:#fff #808080 #808080 #fff;box-shadow:none;border-radius:0
 }
+[data-theme="retro"] .modal-nav{
+  background:#c0c0c0;color:#000;border:2px outset #ccc;border-radius:0;
+  font-family:inherit;font-weight:700
+}
+[data-theme="retro"] .modal-nav:hover{
+  background:#c0c0c0;border-style:inset;border-color:#808080;
+  transform:translateY(-50%);scale:1
+}
+[data-theme="retro"] .modal-prev,
+[data-theme="retro"] .modal-next{
+  left:4px;right:auto
+}
+[data-theme="retro"] .modal-next{left:auto;right:4px}
+[data-theme="retro"] .modal-counter{color:#000}
 [data-theme="retro"] footer{
   background:#c0c0c0;backdrop-filter:none;
   border-top:2px solid;border-color:#fff #808080
