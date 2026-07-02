@@ -629,6 +629,111 @@
     @media(max-width:600px){
       footer{padding:15px 20px;flex-direction:column;text-align:center}
     }
+
+    /* Win 3.1 retro theme */
+    [data-theme="retro"] body {
+      background:#c0c0c0;
+      color:#000;
+      font-family:"MS Sans Serif","Tahoma","Courier New",monospace
+    }
+    [data-theme="retro"] .app-container{background:transparent}
+    [data-theme="retro"] .logo{
+      background:none;-webkit-text-fill-color:#000080;color:#000080;text-shadow:none
+    }
+    [data-theme="retro"] .subtitle,[data-theme="retro"] .tagline{color:#000}
+    [data-theme="retro"] .card{
+      background:#c0c0c0;border:3px solid;
+      border-color:#fff #808080 #808080 #fff;
+      backdrop-filter:none;box-shadow:none;border-radius:0
+    }
+    [data-theme="retro"] .question-title{color:#000}
+    [data-theme="retro"] .question-number{color:#000;opacity:.8}
+    [data-theme="retro"] .option-btn{
+      background:#c0c0c0;border:2px outset #ccc;border-radius:0;color:#000
+    }
+    [data-theme="retro"] .option-btn:hover{
+      background:#d4d4d4;transform:none;box-shadow:none
+    }
+    [data-theme="retro"] .option-btn.selected{
+      background:#000080;color:#fff;border-color:#000080;box-shadow:none
+    }
+    [data-theme="retro"] .option-btn .emoji{display:none}
+    [data-theme="retro"] .progress-bar{
+      background:#808080;border-radius:0;box-shadow:inset 0 1px 3px #000
+    }
+    [data-theme="retro"] .progress-fill{
+      background:#000080;border-radius:0;box-shadow:none
+    }
+    [data-theme="retro"] .btn{
+      background:#c0c0c0;border:2px outset #ccc;border-radius:0;color:#000;
+      box-shadow:none;text-transform:none;font-family:inherit
+    }
+    [data-theme="retro"] .btn-primary{
+      background:#c0c0c0;border:2px outset #ccc;border-radius:0;color:#000;
+      box-shadow:none;flex:none
+    }
+    [data-theme="retro"] .btn-primary:hover:not(:disabled){
+      transform:none;box-shadow:none
+    }
+    [data-theme="retro"] .btn-secondary{
+      background:#c0c0c0;border:2px outset #ccc;color:#000
+    }
+    [data-theme="retro"] .btn-secondary:hover{
+      transform:none;background:#d4d4d4
+    }
+    [data-theme="retro"] .spinner{
+      border-color:#808080;border-top-color:#000080
+    }
+    [data-theme="retro"] .loading-text{color:#000}
+    [data-theme="retro"] .results-title{
+      background:none;-webkit-text-fill-color:#000080;color:#000080
+    }
+    [data-theme="retro"] .result-card{
+      background:#c0c0c0;border:2px solid;
+      border-color:#fff #808080 #808080 #fff;
+      border-radius:0;box-shadow:none
+    }
+    [data-theme="retro"] .result-card:hover{
+      transform:none;background:#d4d4d4;box-shadow:none
+    }
+    [data-theme="retro"] .result-rank{
+      background:#000080;border-radius:0;box-shadow:none
+    }
+    [data-theme="retro"] .result-title{color:#000}
+    [data-theme="retro"] .result-reason{color:#222;opacity:1}
+    [data-theme="retro"] .result-unis{color:#000;opacity:.8}
+    [data-theme="retro"] .advice-box{
+      background:#c0c0c0;border:2px inset #ccc;border-left:4px solid #000080;
+      border-radius:0
+    }
+    [data-theme="retro"] .advice-title{color:#000}
+    [data-theme="retro"] .advice-text{color:#222;opacity:1}
+    [data-theme="retro"] .welcome-text{color:#000}
+    [data-theme="retro"] .welcome-svg{filter:none}
+    [data-theme="retro"] footer{
+      background:#c0c0c0;
+      border-top:2px solid;border-color:#fff #808080
+    }
+    [data-theme="retro"] .footer-name{color:#000}
+    [data-theme="retro"] .ruta-btn{
+      background:#c0c0c0;border:2px outset #ccc;border-radius:0;color:#000;
+      box-shadow:none;font-weight:400;font-family:inherit;padding:3px 10px
+    }
+    [data-theme="retro"] .ruta-btn:hover{
+      transform:none;box-shadow:none
+    }
+    [data-theme="retro"] .theme-select{
+      background:#c0c0c0;border:2px inset #ccc;border-radius:0;color:#000;
+      font-family:inherit;padding:2px 4px;font-size:.85em
+    }
+    .theme-select{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:6px;color:#fff;padding:4px 8px;
+      font-family:inherit;font-size:.8em;cursor:pointer;outline:none
+    }
+    .theme-select option{background:#1a1a2e;color:#fff}
+    [data-theme="retro"] .theme-select option{background:#c0c0c0;color:#000}
   </style>
 </head>
 <body>
@@ -699,6 +804,20 @@
   </div>
 
   <script>
+    // ====================================
+    // TEMA (Moderno / Win 3.1)
+    // ====================================
+    function setTheme(t){
+      document.documentElement.dataset.theme=t==='retro'?'retro':'';
+      localStorage.setItem('theme',t)
+    }
+    (function(){
+      const t=localStorage.getItem('theme')||'modern';
+      document.documentElement.dataset.theme=t==='retro'?'retro':'';
+      const sel=document.getElementById('themeSelect');
+      if(sel)sel.value=t;
+    })();
+
     // ====================================
     // CONFIGURACIÓN Y DATOS
     // ====================================
@@ -1106,6 +1225,10 @@
       <a href="index.html" class="ruta-btn">🏠 Inicio</a>
       <a href="chat.html" class="ruta-btn">🤖 Chat IA</a>
     </div>
+    <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)">
+      <option value="modern">Moderno</option>
+      <option value="retro">Win 3.1</option>
+    </select>
   </footer>
 </body>
 </html>

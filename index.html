@@ -128,6 +128,59 @@ footer{
   footer{padding:15px 20px;flex-direction:column;text-align:center}
   .footer-year{font-size:1.2em}
 }
+
+/* Win 3.1 retro theme */
+[data-theme="retro"] body {
+  background:#c0c0c0;
+  color:#000;
+  font-family:"MS Sans Serif","Tahoma","Courier New",monospace
+}
+[data-theme="retro"] .seed{
+  border-radius:0;animation:none;box-shadow:none;opacity:1;
+  border:2px solid;border-color:#fff #808080 #808080 #fff
+}
+[data-theme="retro"] .seed:hover{
+  transform:none!important;box-shadow:none
+}
+[data-theme="retro"] .modal-overlay{
+  background:rgba(192,192,192,.92);backdrop-filter:none
+}
+[data-theme="retro"] .modal-img{
+  border:3px solid;border-color:#fff #808080 #808080 #fff;box-shadow:none;border-radius:0
+}
+[data-theme="retro"] footer{
+  background:#c0c0c0;backdrop-filter:none;
+  border-top:2px solid;border-color:#fff #808080
+}
+[data-theme="retro"] .footer-name,
+[data-theme="retro"] .footer-details{
+  color:#000;-webkit-text-fill-color:#000;opacity:1
+}
+[data-theme="retro"] .footer-year{
+  -webkit-text-fill-color:#000;background:none;color:#000
+}
+[data-theme="retro"] .ruta-btn{
+  background:#c0c0c0;border:2px outset #ccc;border-radius:0;color:#000;
+  box-shadow:none;font-weight:400;font-family:inherit;padding:3px 10px
+}
+[data-theme="retro"] .ruta-btn:hover{
+  transform:none;box-shadow:none
+}
+[data-theme="retro"] .theme-select{
+  background:#c0c0c0;border:2px inset #ccc;border-radius:0;color:#000;
+  font-family:inherit;padding:2px 4px;font-size:.85em
+}
+[data-theme="retro"] .theme-select:focus{
+  outline:2px solid #000080
+}
+.theme-select{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:6px;color:#fff;padding:4px 8px;
+  font-family:inherit;font-size:.8em;cursor:pointer;outline:none
+}
+.theme-select option{background:#1a1a2e;color:#fff}
+[data-theme="retro"] .theme-select option{background:#c0c0c0;color:#000}
 </style>
 </head>
 <body>
@@ -146,9 +199,23 @@ footer{
     <a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
     <a href="chat.html" class="ruta-btn">🤖 Chat IA</a>
   </div>
+  <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)">
+    <option value="modern">Moderno</option>
+    <option value="retro">Win 3.1</option>
+  </select>
   <span class="footer-year">© 2026</span>
 </footer>
 <script>
+function setTheme(t){
+  document.documentElement.dataset.theme=t==='retro'?'retro':'';
+  localStorage.setItem('theme',t)
+}
+(function(){
+  const t=localStorage.getItem('theme')||'modern';
+  document.documentElement.dataset.theme=t==='retro'?'retro':'';
+  const sel=document.getElementById('themeSelect');
+  if(sel)sel.value=t;
+})();
 const images=[
   'fotos/img1.webp','fotos/img2.webp','fotos/img3.webp','fotos/img4.png',
   'fotos/img5.jpg','fotos/img6.png','fotos/img7.png','fotos/img8.png',

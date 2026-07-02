@@ -163,6 +163,80 @@ footer{
   .msg{max-width:90%}
   .header-title{font-size:1.4em}
 }
+/* Win 3.1 retro theme */
+[data-theme="retro"] body {
+  background:#c0c0c0;color:#000;
+  font-family:"MS Sans Serif","Tahoma","Courier New",monospace
+}
+[data-theme="retro"] .header-title{
+  background:none;-webkit-text-fill-color:#000080;color:#000080
+}
+[data-theme="retro"] .header-sub{color:#000}
+[data-theme="retro"] .card{
+  background:#c0c0c0;border:3px solid;
+  border-color:#fff #808080 #808080 #fff;
+  backdrop-filter:none;box-shadow:none;border-radius:0
+}
+[data-theme="retro"] .msg.user .msg-bubble{
+  background:#d4d4d4;border:2px inset #ccc;
+  border-radius:0;color:#000
+}
+[data-theme="retro"] .msg.bot .msg-bubble{
+  background:#c0c0c0;border:2px outset #ccc;
+  border-radius:0;color:#000
+}
+[data-theme="retro"] .msg.bot .msg-bubble strong{color:#000080}
+[data-theme="retro"] .msg.user .msg-avatar{
+  background:#000080;border-radius:0
+}
+[data-theme="retro"] .msg.bot .msg-avatar{
+  background:#808080;border-radius:0
+}
+[data-theme="retro"] .input-area{
+  border-top:2px solid;border-color:#808080 #fff #fff #808080
+}
+[data-theme="retro"] .input-area input{
+  background:#fff;border:2px inset #ccc;
+  border-radius:0;color:#000;font-family:inherit
+}
+[data-theme="retro"] .input-area input::placeholder{color:#808080}
+[data-theme="retro"] .send-btn{
+  background:#c0c0c0;border:2px outset #ccc;
+  border-radius:0;color:#000;box-shadow:none
+}
+[data-theme="retro"] .send-btn:hover{
+  transform:none;box-shadow:none
+}
+[data-theme="retro"] .welcome-title{
+  background:none;-webkit-text-fill-color:#000080;color:#000080
+}
+[data-theme="retro"] .welcome-text{color:#000;opacity:1}
+[data-theme="retro"] .welcome-icon{display:none}
+[data-theme="retro"] .typing span{background:#808080}
+[data-theme="retro"] footer{
+  background:#c0c0c0;
+  border-top:2px solid;border-color:#fff #808080
+}
+[data-theme="retro"] .footer-name{color:#000}
+[data-theme="retro"] .ruta-btn{
+  background:#c0c0c0;border:2px outset #ccc;border-radius:0;color:#000;
+  box-shadow:none;font-weight:400;font-family:inherit;padding:3px 10px
+}
+[data-theme="retro"] .ruta-btn:hover{
+  transform:none;box-shadow:none
+}
+[data-theme="retro"] .theme-select{
+  background:#c0c0c0;border:2px inset #ccc;border-radius:0;color:#000;
+  font-family:inherit;padding:2px 4px;font-size:.85em
+}
+.theme-select{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:6px;color:#fff;padding:4px 8px;
+  font-family:inherit;font-size:.8em;cursor:pointer;outline:none
+}
+.theme-select option{background:#1a1a2e;color:#fff}
+[data-theme="retro"] .theme-select option{background:#c0c0c0;color:#000}
 </style>
 </head>
 <body>
@@ -192,9 +266,23 @@ footer{
     <a href="index.html" class="ruta-btn">🏠 Inicio</a>
     <a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
   </div>
+  <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)">
+    <option value="modern">Moderno</option>
+    <option value="retro">Win 3.1</option>
+  </select>
 </footer>
 </div>
 <script>
+function setTheme(t){
+  document.documentElement.dataset.theme=t==='retro'?'retro':'';
+  localStorage.setItem('theme',t)
+}
+(function(){
+  const t=localStorage.getItem('theme')||'modern';
+  document.documentElement.dataset.theme=t==='retro'?'retro':'';
+  const sel=document.getElementById('themeSelect');
+  if(sel)sel.value=t;
+})();
 const messages = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
