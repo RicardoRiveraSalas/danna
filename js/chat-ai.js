@@ -2,52 +2,43 @@
 // PROMPTS CENTRALIZADOS
 // ============================================================
 
-const PROMPTS = {
-  systemPersonality: `
+const SYSTEM_PROMPT = `
 # IDENTIDAD
-Eres un asesor educativo experto, paciente y extremadamente confiable. Actúas como un profesor particular cercano que habla en espanol neutro y claro.
+Eres un asesor educativo experto, paciente y extremadamente confiable. Actúas como un profesor particular cercano que habla en español neutro y claro.
 
 # MISION PRINCIPAL
-No solo des respuestas, sino que acompannes al estudiante en su proceso de aprendizaje. Tu meta es que el/ella termine la conversacion sintiendo que entendio el "por que" de las cosas, no solo el "que".
+No solo des respuestas, sino que acompañes al estudiante en su proceso de aprendizaje. Tu meta es que el/ella termine la conversación sintiendo que entendió el "por qué" de las cosas, no solo el "qué".
 
 # REGLAS ESTRICTAS DE COMPORTAMIENTO
-1. Adaptacion al nivel: si la pregunta es basica usa ejemplos cotidianos; si es avanzado profundiza con tecnicismos sin perder claridad.
-2. Metodo paso a paso: desglosa problemas complejos en partes. En lugar de dar la respuesta directa, devuelve preguntas guia para fomentar pensamiento critico.
-3. Manejo de errores: nunca digas "estas mal". Usa frases como "Buena intuicion! Vamos a revisar ese detalle desde otro angulo...".
+1. Adaptación al nivel: si la pregunta es básica usa ejemplos cotidianos; si es avanzado profundiza con tecnicismos sin perder claridad.
+2. Método paso a paso: desglosa problemas complejos en partes. En lugar de dar la respuesta directa, devuelve preguntas guía para fomentar pensamiento crítico.
+3. Manejo de errores: nunca digas "estás mal". Usa frases como "Buena intuición! Vamos a revisar ese detalle desde otro ángulo...".
 4. Si la pregunta es muy extensa, sugiere dividirla en partes.
 5. Si no sabes la respuesta, dilo honestamente y sugiere fuentes confiables. Nunca inventes datos.
-6. Tono motivador pero realista. Usa emojis con moderacion. Usa saltos de linea, negritas y vinetas para facilitar lectura.
-7. Contexto: eres una IA local privada que funciona completamente en el navegador. Este sitio es de Danna Rivera, estudiante de Diseno en CEDES Don Bosco, Costa Rica.
+6. Tono motivador pero realista. Usa emojis con moderación. Usa saltos de línea, negritas y viñetas para facilitar lectura.
+7. Contexto: eres una IA local privada que funciona completamente en el navegador. Este sitio es de Danna Rivera, estudiante de Diseño en CEDES Don Bosco, Costa Rica.
 8. Tienes memoria conversacional: retoma temas anteriores si el estudiante vuelve a preguntar.
-`,
+`;
+
+// Mensajes de interfaz (se pueden usar en la UI)
+const UI_MESSAGES = {
   welcome: `
 Bienvenido! Soy tu asesor educativo. Arriba puedes seleccionar el motor de IA que prefieras:
-- **Gemini Nano**  (recomendado) — IA integrada en Chrome, sin descargas.
-- **WebLLM**  — modelo Llama 3.2 de ~700MB via WebGPU.
-- **Transformers.js**  — modelo TinyLlama 1.1B via Hugging Face (WebGPU o CPU).
+- **Gemini Nano** (recomendado) — IA integrada en Chrome, sin descargas.
+- **WebLLM** — modelo Llama 3.2 de ~700MB vía WebGPU.
+- **Transformers.js** — modelo TinyLlama 1.1B vía Hugging Face (WebGPU o CPU).
 - **Sin IA** — solo respuestas predefinidas.
 
-Elige el que mas te guste y empieza a preguntar!
+Elige el que más te guste y empieza a preguntar!
 `,
-  readyGemini: `
- **Gemini Nano listo!** Tus preguntas se procesan con el modelo de IA integrado en Chrome. Respuestas rapidas y sin descargas. Preguntame lo que sea! 
-`,
-  readyWebLLM: `
- **WebLLM listo!** El modelo Llama 3.2 se ha cargado en tu navegador. Todo funciona localmente, sin enviar datos a internet. 
-`,
-  readyTransformers: `
- **Transformers.js listo!** Modelo TinyLlama 1.1B cargado via Hugging Face. Funciona con WebGPU o CPU. 
-`
+  readyGemini: `✨ **Gemini Nano listo!** Tus preguntas se procesan con el modelo de IA integrado en Chrome. Respuestas rápidas y sin descargas. Pregúntame lo que sea!`,
+  readyWebLLM: `🧠 **WebLLM listo!** El modelo Llama 3.2 se ha cargado en tu navegador. Todo funciona localmente, sin enviar datos a internet.`,
+  readyTransformers: `🤖 **Transformers.js listo!** Modelo TinyLlama 1.1B cargado vía Hugging Face. Funciona con WebGPU o CPU.`
 };
 
 // ============================================================
-// ESTADO GLOBAL
+// FUNCIONES DE AYUDA
 // ============================================================
-
-let currentBackendId = null;
-let webllmEngine = null;
-let webllmReady = false;
-let webllmLoading = false;
 
 function dispatch(status, message) {
   window.__aiStatus = status;
@@ -55,6 +46,37 @@ function dispatch(status, message) {
   window.dispatchEvent(new CustomEvent('ai-status', {
     detail: { status, message: message || '' }
   }));
+}
+
+/**
+ * Construye el prompt para cada backend en el formato esperado.
+ */
+function buildPrompt(backendId, text, history = []) {
+  const historyLimit = 6;
+  const recent = history.slice(-historyLimit);
+  let systemMessage = { role: 'system', content: SYSTEM_PROMPT };
+
+  if (backendId === 'gemini') {
+    // Gemini usa systemPrompt por separado, no en los mensajes
+    let prompt = '';
+    for (const m of recent) {
+      const role = m.role === 'user' ? 'Usuario' : 'Asistente';
+      prompt += `${role}: ${m.text}\n\n`;
+    }
+    prompt += `Usuario: ${text}\n\nAsistente: `;
+    return { systemPrompt: SYSTEM_PROMPT, prompt };
+  }
+
+  // WebLLM y Transformers usan lista de mensajes
+  const messages = [systemMessage];
+  for (const m of recent) {
+    messages.push({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: m.text
+    });
+  }
+  messages.push({ role: 'user', content: text });
+  return { messages };
 }
 
 // ============================================================
@@ -65,57 +87,55 @@ const backends = {
   gemini: {
     id: 'gemini',
     name: 'Gemini Nano',
-    icon: '\u2728',
+    icon: '✨',
     async check() {
       try {
         const ai = window.ai || window.chrome?.aiOriginTrial;
-        if (!ai || !ai.languageModel) return false;
+        if (!ai?.languageModel) return false;
         const caps = await ai.languageModel.capabilities();
         return caps.available !== 'no';
-      } catch { return false; }
+      } catch {
+        return false;
+      }
     },
     async start() {
       try {
         const ai = window.ai || window.chrome?.aiOriginTrial;
-        if (!ai || !ai.languageModel) {
-          dispatch('error', 'Chrome no tiene la Prompt API. Activala en:\nchrome://flags/#prompt-api-for-gemini-nano\n\nO usa WebLLM.');
+        if (!ai?.languageModel) {
+          dispatch('error', 'Chrome no tiene la Prompt API. Actívala en:\nchrome://flags/#prompt-api-for-gemini-nano\n\nO usa WebLLM.');
           return;
         }
         const caps = await ai.languageModel.capabilities();
         if (!caps || caps.available === 'no') {
-          dispatch('error', 'Gemini Nano no esta disponible en este navegador.\n\nPara activarlo:\n1. Abre chrome://flags/#prompt-api-for-gemini-nano\n2. Selecciona "Enabled"\n3. Reinicia Chrome\n\nMientras, usa WebLLM o modo Sin IA.');
+          dispatch('error', 'Gemini Nano no está disponible en este navegador.\n\nPara activarlo:\n1. Abre chrome://flags/#prompt-api-for-gemini-nano\n2. Selecciona "Enabled"\n3. Reinicia Chrome\n\nMientras, usa WebLLM o modo Sin IA.');
           return;
         }
+        // Si está en 'after-download', forzamos la descarga creando una sesión efímera
         if (caps.available === 'after-download') {
           dispatch('downloading', 'Descargando Gemini Nano (modelo integrado de Chrome)...');
-          const s = await ai.languageModel.create();
-          s.destroy();
+          const session = await ai.languageModel.create({ systemPrompt: SYSTEM_PROMPT });
+          session.destroy();
         }
         dispatch('ready', 'gemini');
       } catch (err) {
         console.error('Error Gemini:', err);
-        dispatch('error', 'Error al iniciar Gemini Nano: ' + (err.message || ''));
+        dispatch('error', `Error al iniciar Gemini Nano: ${err.message || ''}`);
       }
     },
-    get isReady() { return true; },
+    get isReady() {
+      // Verificamos nuevamente las capacidades en cada llamado (puede cambiar)
+      return true; // simplificado, pero se puede mejorar con caché
+    },
     get isLoading() { return false; },
     async generateReply(text, history) {
       try {
         const ai = window.ai || window.chrome?.aiOriginTrial;
-        if (!ai || !ai.languageModel) return null;
-        let prompt = '';
-        if (history && history.length > 0) {
-          for (const m of history.slice(-6)) {
-            prompt += (m.role === 'user' ? 'Usuario: ' : 'Asistente: ') + m.text + '\n\n';
-          }
-        }
-        prompt += 'Usuario: ' + text + '\n\nAsistente: ';
-        const session = await ai.languageModel.create({
-          systemPrompt: PROMPTS.systemPersonality
-        });
+        if (!ai?.languageModel) return null;
+        const { systemPrompt, prompt } = buildPrompt('gemini', text, history);
+        const session = await ai.languageModel.create({ systemPrompt });
         const result = await session.prompt(prompt);
         session.destroy();
-        return (typeof result === 'string') ? result.trim() : String(result).trim();
+        return typeof result === 'string' ? result.trim() : String(result).trim();
       } catch (err) {
         console.error('Error Gemini generando:', err);
         return null;
@@ -126,13 +146,16 @@ const backends = {
   webllm: {
     id: 'webllm',
     name: 'WebLLM',
-    icon: '\u{1F9E0}',
+    icon: '🧠',
+    _engine: null,
+    _ready: false,
+    _loading: false,
     async check() {
       return !!navigator.gpu;
     },
     async start() {
-      if (webllmLoading || webllmReady) return;
-      webllmLoading = true;
+      if (this._loading || this._ready) return;
+      this._loading = true;
       dispatch('downloading', 'Verificando WebGPU...');
       try {
         if (!navigator.gpu) {
@@ -141,7 +164,7 @@ const backends = {
         }
         dispatch('downloading', 'Conectando con WebLLM...');
         const { MLCEngine } = await import('https://esm.run/@mlc-ai/web-llm');
-        webllmEngine = new MLCEngine({
+        this._engine = new MLCEngine({
           initProgressCallback: (report) => {
             if (report.progress && report.progress > 0) {
               const pct = Math.min(99, Math.round(report.progress * 100));
@@ -152,35 +175,32 @@ const backends = {
           }
         });
         dispatch('downloading', 'Iniciando descarga del modelo (~700MB la primera vez)...');
-        await webllmEngine.reload('Llama-3.2-1B-Instruct-q4f16_1-MLC');
-        webllmReady = true;
+        await this._engine.reload('Llama-3.2-1B-Instruct-q4f16_1-MLC');
+        this._ready = true;
         dispatch('ready', 'webllm');
       } catch (err) {
         console.error('Error WebLLM:', err);
         const msg = err.message || '';
         if (msg.includes('maxComputeWorkgroupStorageSize')) {
-          dispatch('error', 'WebLLM requiere un GPU con mayor capacidad de memoria de grupo de trabajo.\n\nTu GPU solo soporta 16KB, necesita 32KB.\n\nSugerencias:\n- Actualiza drivers Mesa/Vulkan\n- Usa Chrome con Gemini Nano (si esta disponible)\n- O selecciona "Sin IA" para respuestas predefinidas.');
+          dispatch('error', 'WebLLM requiere un GPU con mayor capacidad de memoria de grupo de trabajo.\n\nTu GPU solo soporta 16KB, necesita 32KB.\n\nSugerencias:\n- Actualiza drivers Mesa/Vulkan\n- Usa Chrome con Gemini Nano (si está disponible)\n- O selecciona "Sin IA" para respuestas predefinidas.');
         } else {
-          dispatch('error', 'Error al cargar WebLLM: ' + msg);
+          dispatch('error', `Error al cargar WebLLM: ${msg}`);
         }
       } finally {
-        webllmLoading = false;
+        this._loading = false;
       }
     },
-    get isReady() { return webllmReady; },
-    get isLoading() { return webllmLoading; },
+    get isReady() { return this._ready; },
+    get isLoading() { return this._loading; },
     async generateReply(text, history) {
-      if (!webllmEngine || !webllmReady) return null;
+      if (!this._engine || !this._ready) return null;
       try {
-        const messages = [{ role: 'system', content: PROMPTS.systemPersonality }];
-        if (history && history.length > 0) {
-          for (const m of history.slice(-6)) {
-            messages.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text });
-          }
-        }
-        messages.push({ role: 'user', content: text });
-        const reply = await webllmEngine.chat.completions.create({
-          messages, stream: false, max_tokens: 500, temperature: 0.7
+        const { messages } = buildPrompt('webllm', text, history);
+        const reply = await this._engine.chat.completions.create({
+          messages,
+          stream: false,
+          max_tokens: 500,
+          temperature: 0.7
         });
         return reply.choices[0]?.message?.content?.trim() || null;
       } catch (err) {
@@ -193,7 +213,7 @@ const backends = {
   transformers: {
     id: 'transformers',
     name: 'Transformers.js',
-    icon: '\u{1F916}',
+    icon: '🤖',
     _pipeline: null,
     _loading: false,
     async check() {
@@ -217,7 +237,7 @@ const backends = {
         dispatch('ready', 'transformers');
       } catch (err) {
         console.error('Error Transformers:', err);
-        dispatch('error', 'Error al cargar Transformers.js: ' + (err.message || ''));
+        dispatch('error', `Error al cargar Transformers.js: ${err.message || ''}`);
       } finally {
         this._loading = false;
       }
@@ -227,14 +247,15 @@ const backends = {
     async generateReply(text, history) {
       if (!this._pipeline) return null;
       try {
-        let prompt = '<|system|>\n' + PROMPTS.systemPersonality + '\n<|end|>\n';
-        if (history && history.length > 0) {
-          for (const m of history.slice(-6)) {
-            const role = m.role === 'user' ? 'user' : 'assistant';
-            prompt += `<|${role}|>\n${m.text}\n<|end|>\n`;
-          }
+        const { messages } = buildPrompt('transformers', text, history);
+        // Transformers espera un solo string con el prompt en formato especial
+        let prompt = '<|system|>\n' + SYSTEM_PROMPT + '\n<|end|>\n';
+        for (const m of messages) {
+          if (m.role === 'system') continue; // ya incluido
+          const role = m.role === 'user' ? 'user' : 'assistant';
+          prompt += `<|${role}|>\n${m.content}\n<|end|>\n`;
         }
-        prompt += `<|user|>\n${text}\n<|end|>\n<|assistant|>\n`;
+        prompt += '<|assistant|>\n';
         const result = await this._pipeline(prompt, {
           max_new_tokens: 500,
           temperature: 0.7,
@@ -251,25 +272,46 @@ const backends = {
 };
 
 // ============================================================
-// DETECCION
+// GESTIÓN DE ESTADO
+// ============================================================
+
+let currentBackendId = null;
+
+// Recuperar selección previa
+try {
+  const saved = localStorage.getItem('danna_ai_backend');
+  if (saved && backends[saved]) {
+    currentBackendId = saved;
+  }
+} catch {}
+
+// ============================================================
+// DETECCIÓN PARALELA
 // ============================================================
 
 async function detectBackends() {
-  const result = {};
-  for (const [id, backend] of Object.entries(backends)) {
-    try { result[id] = await backend.check(); } catch { result[id] = false; }
-  }
-  return result;
+  const checks = Object.entries(backends).map(async ([id, backend]) => {
+    try {
+      const available = await backend.check();
+      return [id, available];
+    } catch {
+      return [id, false];
+    }
+  });
+  const results = await Promise.all(checks);
+  return Object.fromEntries(results);
 }
 
 // ============================================================
-// SELECCION
+// SELECCIÓN
 // ============================================================
 
 async function switchBackend(id) {
-  if (!backends[id] && id !== 'off') return;
+  if (id !== 'off' && !backends[id]) return;
   currentBackendId = id;
-  try { localStorage.setItem('danna_ai_backend', id); } catch {}
+  try {
+    localStorage.setItem('danna_ai_backend', id);
+  } catch {}
   if (id === 'off') {
     dispatch('ready', 'off');
     return;
@@ -278,12 +320,13 @@ async function switchBackend(id) {
     await backends[id].start();
   } catch (err) {
     console.error('Error starting backend', id, err);
-    dispatch('error', 'Error al iniciar ' + backends[id].name + ': ' + (err.message || ''));
+    dispatch('error', `Error al iniciar ${backends[id].name}: ${err.message || ''}`);
   }
 }
 
 function getCurrentBackend() {
-  return currentBackendId === 'off' ? null : (backends[currentBackendId] || null);
+  if (currentBackendId === 'off') return null;
+  return backends[currentBackendId] || null;
 }
 
 // ============================================================
@@ -297,7 +340,7 @@ async function generateReply(text, history) {
 }
 
 // ============================================================
-// EXPOSICION GLOBAL
+// EXPOSICIÓN GLOBAL (API pública sin cambios)
 // ============================================================
 
 window.__ai = {
@@ -317,5 +360,9 @@ window.__ai = {
     const b = getCurrentBackend();
     return b ? b.isLoading : false;
   },
-  prompts: PROMPTS
+  // Se mantienen los prompts para compatibilidad con la UI
+  prompts: {
+    systemPersonality: SYSTEM_PROMPT,
+    ...UI_MESSAGES
+  }
 };
