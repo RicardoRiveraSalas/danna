@@ -110,95 +110,425 @@ const QUESTIONS = [
 ];
 
 const CAREERS_DB = [
-  {
-    name: "Ingeniería en Sistemas Computacionales",
-    keywords: { "tecnología": 3, "lógica": 3, "innovación": 2, "programación": 3, "desarrollo": 3, "datos": 2 },
-    reason: "Tu perfil demuestra una fuerte inclinación hacia la tecnología, análisis lógico y resolución de problemas. Ideal para diseñar soluciones digitales innovadoras.",
-    universities: "TEC, UCR, UNED"
-  },
-  {
-    name: "Ingeniería Civil",
-    keywords: { "matemática": 3, "física": 3, "proyectos": 2, "liderazgo": 2, "impacto": 2 },
-    reason: "Tu pensamiento analítico y capacidad de planificación son perfectos para proyectos de infraestructura de alto impacto social.",
-    universities: "UCR, TEC, UNED"
-  },
+  // ===== SALUD =====
   {
     name: "Medicina",
-    keywords: { "ayudar": 3, "biología": 3, "ciencia": 2, "impacto": 2, "personas": 2 },
+    keywords: { "ayudar": 3, "biología": 3, "ciencia": 2, "impacto": 2, "personas": 2, "salud": 3 },
     reason: "Tu vocación de servicio y profundo interés en ciencias naturales te posicionan para una carrera médica gratificante.",
     universities: "UCR, UNA, UNED"
   },
   {
-    name: "Administración de Empresas",
-    keywords: { "negocios": 3, "liderazgo": 3, "datos": 2, "independiente": 2, "impacto": 1 },
-    reason: "Tu orientación empresarial, liderazgo y capacidad analítica te preparan para gestionar organizaciones innovadoras.",
-    universities: "UNED, UCR, UNIFIEM"
+    name: "Enfermería",
+    keywords: { "ayudar": 3, "personas": 2, "biología": 2, "impacto": 2, "salud": 3, "equipo": 2 },
+    reason: "Tu vocación humanitaria y habilidad para trabajar en equipo te preparan para una carrera de cuidado directo.",
+    universities: "UCR, UNA, UNED, UTN, Latina"
+  },
+  {
+    name: "Farmacia",
+    keywords: { "ciencia": 3, "química": 3, "biología": 2, "precisión": 3, "salud": 2, "experimentación": 2 },
+    reason: "Tu interés por la química y la precisión científica te orientan hacia la investigación y producción de medicamentos.",
+    universities: "UCR"
+  },
+  {
+    name: "Odontología",
+    keywords: { "ayudar": 2, "biología": 2, "salud": 3, "precisión": 3, "personas": 2, "ciencia": 2 },
+    reason: "Tu destreza manual y vocación de servicio te preparan para una carrera en salud oral con alta demanda.",
+    universities: "UCR, UNA, Latina"
+  },
+  {
+    name: "Microbiología",
+    keywords: { "ciencia": 3, "biología": 3, "experimentación": 3, "observación": 2, "laboratorio": 3, "precisión": 2 },
+    reason: "Tu fascinación por el mundo microscópico y el análisis de laboratorio te llevan a una carrera científica clave.",
+    universities: "UCR"
+  },
+  {
+    name: "Nutrición",
+    keywords: { "ayudar": 2, "ciencia": 2, "biología": 2, "salud": 3, "personas": 2, "alimentos": 2 },
+    reason: "Tu interés en la alimentación saludable y el bienestar te orientan a una carrera de impacto preventivo.",
+    universities: "UCR, UNA, UNED, Hispanoamericana"
+  },
+  {
+    name: "Fisioterapia",
+    keywords: { "ayudar": 3, "personas": 2, "salud": 3, "biología": 2, "equipo": 2, "deporte": 2 },
+    reason: "Tu vocación de servicio y pasión por el movimiento humano te preparan para rehabilitar y mejorar vidas.",
+    universities: "UCR, UNA, UNED, Latina, Hispanoamericana, Fidelitas"
   },
   {
     name: "Psicología",
-    keywords: { "personas": 3, "comunicación": 3, "ayudar": 2, "impacto": 2, "equipo": 2 },
-    reason: "Tu empatía, inteligencia emocional y habilidades comunicativas son fundamentales en esta carrera de alto impacto.",
-    universities: "UCR, UNA, UNED"
+    keywords: { "personas": 3, "comunicación": 3, "ayudar": 2, "impacto": 2, "equipo": 2, "análisis": 2 },
+    reason: "Tu empatía, inteligencia emocional y habilidades comunicativas son fundamentales en esta carrera transformadora.",
+    universities: "UCR, UNA, UNED, Latina, Hispanoamericana, Fidelitas, San Marcos, ULAT"
   },
   {
-    name: "Ingeniería Ambiental",
-    keywords: { "sostenibilidad": 3, "innovación": 2, "impacto": 3, "ciencia": 2, "naturaleza": 2 },
-    reason: "Tu interés en sustentabilidad y pensamiento innovador encajan perfectamente en soluciones ambientales del futuro.",
-    universities: "EARTH, TEC, UNA"
+    name: "Medicina Veterinaria",
+    keywords: { "naturaleza": 3, "biología": 3, "ayudar": 2, "ciencia": 2, "animales": 3, "experimentación": 2 },
+    reason: "Tu amor por los animales y el pensamiento científico se unen en esta carrera de salud y bienestar animal.",
+    universities: "UNA, UCR"
+  },
+  // ===== INGENIERÍAS =====
+  {
+    name: "Ingeniería en Sistemas Computacionales",
+    keywords: { "tecnología": 3, "lógica": 3, "innovación": 2, "programación": 3, "desarrollo": 3, "datos": 2 },
+    reason: "Tu perfil muestra fuerte inclinación hacia la tecnología y el análisis lógico. Ideal para diseñar soluciones digitales innovadoras.",
+    universities: "TEC, UCR, UNED, Fidelitas, Latina, Hispanoamericana, ULAT, San Marcos, Americana"
   },
   {
-    name: "Diseño Gráfico y Multimedia",
-    keywords: { "creatividad": 3, "arte": 3, "innovación": 2, "expresión": 2, "contenido": 2 },
-    reason: "Tu creatividad y capacidades artísticas te hacen ideal para profesiones de diseño e innovación visual de clase mundial.",
-    universities: "UNA, UNED, institutos privados"
-  },
-  {
-    name: "Enfermería",
-    keywords: { "ayudar": 3, "personas": 2, "biología": 2, "impacto": 2, "salud": 2 },
-    reason: "Tu vocación humanitaria y interés en ciencias de la salud te preparan para una carrera de servicio directo.",
-    universities: "UCR, UNA, CAISALAS"
-  },
-  {
-    name: "Ingeniería en Agronomía",
-    keywords: { "naturaleza": 3, "experimentación": 2, "sostenibilidad": 2, "impacto": 2 },
-    reason: "Tu conexión con la naturaleza y mentalidad sostenible se alinean con esta carrera práctica y transformadora.",
-    universities: "UNA, TEC, UCR"
-  },
-  {
-    name: "Contabilidad",
-    keywords: { "datos": 3, "números": 3, "precisión": 2, "negocios": 2, "análisis": 2 },
-    reason: "Tu capacidad analítica numérica y atención al detalle te posicionan en finanzas corporativas de impacto.",
-    universities: "UNED, UCR, institutos técnicos"
-  },
-  {
-    name: "Educación",
-    keywords: { "personas": 3, "comunicación": 3, "impacto": 2, "enseñanza": 2, "equipo": 2 },
-    reason: "Tu pasión por la enseñanza y capacidad de inspirar te hacen un candidato excepcional para transformar vidas.",
-    universities: "UNA, UNED, UCR"
-  },
-  {
-    name: "Marketing Digital",
-    keywords: { "creatividad": 2, "comunicación": 3, "datos": 2, "innovación": 2, "contenido": 2 },
-    reason: "Tu dominio creativo, comunicacional y de redes digitales te posiciona como experto en marketing moderno.",
-    universities: "UNED, institutos técnicos, PUCE"
-  },
-  {
-    name: "Derecho",
-    keywords: { "comunicación": 2, "liderazgo": 2, "análisis": 2, "impacto": 3, "justicia": 2 },
-    reason: "Tu capacidad de análisis crítico y pasión por justicia social te preparan para impacto legal significativo.",
-    universities: "UCR, UNA, UNED"
+    name: "Ingeniería Civil",
+    keywords: { "matemática": 3, "física": 3, "proyectos": 2, "liderazgo": 2, "impacto": 2, "construcción": 2 },
+    reason: "Tu pensamiento analítico y capacidad de planificación son perfectos para proyectos de infraestructura de alto impacto.",
+    universities: "UCR, TEC, UNED, Fidelitas, Latina"
   },
   {
     name: "Ingeniería Eléctrica",
-    keywords: { "tecnología": 3, "matemática": 3, "física": 2, "innovación": 2, "precisión": 2 },
-    reason: "Tu dominio en ciencias exactas y tecnología te califica para diseñar sistemas eléctricos del futuro.",
-    universities: "UCR, TEC, UNED"
+    keywords: { "tecnología": 3, "matemática": 3, "física": 2, "innovación": 2, "precisión": 2, "energía": 2 },
+    reason: "Tu dominio en ciencias exactas y tecnología te califica para diseñar sistemas eléctricos y energéticos del futuro.",
+    universities: "UCR, TEC, UNED, Fidelitas, Latina"
+  },
+  {
+    name: "Ingeniería Industrial",
+    keywords: { "negocios": 2, "liderazgo": 2, "datos": 2, "proyectos": 3, "innovación": 2, "procesos": 3 },
+    reason: "Tu visión estratégica y habilidad para optimizar procesos te preparan para liderar la eficiencia empresarial.",
+    universities: "UCR, TEC, UNED, Fidelitas, Latina"
+  },
+  {
+    name: "Ingeniería Mecánica",
+    keywords: { "física": 3, "matemática": 3, "tecnología": 2, "precisión": 2, "innovación": 2, "diseño": 2 },
+    reason: "Tu pasión por la mecánica y las ciencias exactas te orientan a diseñar máquinas y sistemas de alto rendimiento.",
+    universities: "TEC, UCR, UNED, Latina"
+  },
+  {
+    name: "Ingeniería Química",
+    keywords: { "química": 3, "ciencia": 3, "experimentación": 2, "procesos": 3, "precisión": 2, "innovación": 2 },
+    reason: "Tu comprensión profunda de la química y los procesos productivos te lleva a industrias de transformación clave.",
+    universities: "UCR, TEC"
+  },
+  {
+    name: "Ingeniería Mecatrónica",
+    keywords: { "tecnología": 3, "innovación": 3, "programación": 2, "física": 2, "diseño": 2, "robótica": 3 },
+    reason: "Tu fascinación por la robótica y la automatización encaja perfectamente en esta carrera multidisciplinaria del futuro.",
+    universities: "TEC, Fidelitas"
+  },
+  {
+    name: "Ingeniería Ambiental",
+    keywords: { "sostenibilidad": 3, "innovación": 2, "impacto": 3, "ciencia": 2, "naturaleza": 2, "recursos": 2 },
+    reason: "Tu compromiso con el medio ambiente y pensamiento innovador encajan en soluciones sostenibles para el planeta.",
+    universities: "TEC, EARTH, UNA, UCR"
+  },
+  {
+    name: "Ingeniería en Computación",
+    keywords: { "tecnología": 3, "programación": 3, "lógica": 3, "innovación": 2, "datos": 2, "desarrollo": 3 },
+    reason: "Tu habilidad para resolver problemas complejos con tecnología te prepara para la vanguardia de la computación.",
+    universities: "TEC, UCR"
+  },
+  {
+    name: "Ingeniería en Producción Industrial",
+    keywords: { "procesos": 3, "liderazgo": 2, "proyectos": 2, "innovación": 2, "negocios": 2, "producción": 3 },
+    reason: "Tu capacidad para gestionar y optimizar sistemas productivos te lleva a liderar la industria manufacturera.",
+    universities: "TEC, UNED"
+  },
+  {
+    name: "Ingeniería en Seguridad Laboral",
+    keywords: { "personas": 2, "salud": 2, "procesos": 2, "prevención": 3, "liderazgo": 2, "impacto": 2 },
+    reason: "Tu compromiso con el bienestar laboral y la prevención te convierten en un profesional clave en cualquier industria.",
+    universities: "UNED, TEC"
+  },
+  // ===== CIENCIAS NATURALES =====
+  {
+    name: "Biología",
+    keywords: { "ciencia": 3, "biología": 3, "naturaleza": 2, "experimentación": 2, "observación": 2, "laboratorio": 2 },
+    reason: "Tu curiosidad por la vida y los ecosistemas te orienta a una carrera científica de descubrimiento y conservación.",
+    universities: "UCR, UNA, UNED"
   },
   {
     name: "Biología Marina",
-    keywords: { "ciencia": 3, "naturaleza": 3, "observación": 2, "sostenibilidad": 2, "experimentación": 2 },
-    reason: "Tu fascinación por la naturaleza y el océano se funde con rigor científico en esta carrera innovadora.",
-    universities: "UNA, UNED, institutos especializados"
+    keywords: { "ciencia": 3, "naturaleza": 3, "observación": 2, "sostenibilidad": 2, "experimentación": 2, "océano": 3 },
+    reason: "Tu fascinación por la vida marina y el océano se funde con el rigor científico para explorar y conservar los mares.",
+    universities: "UNA, UNED"
+  },
+  {
+    name: "Química",
+    keywords: { "ciencia": 3, "química": 3, "experimentación": 3, "laboratorio": 3, "precisión": 2, "observación": 2 },
+    reason: "Tu pasión por entender la composición de la materia te lleva a una carrera de descubrimiento e innovación.",
+    universities: "UCR, UNA, UNED"
+  },
+  {
+    name: "Física",
+    keywords: { "ciencia": 3, "física": 3, "matemática": 3, "experimentación": 2, "lógica": 2, "observación": 2 },
+    reason: "Tu necesidad de entender las leyes del universo te prepara para una carrera de ciencia pura y aplicada.",
+    universities: "UCR, UNA, UNED"
+  },
+  {
+    name: "Geología",
+    keywords: { "ciencia": 3, "naturaleza": 2, "observación": 2, "experimentación": 2, "recursos": 2, "tierra": 3 },
+    reason: "Tu interés por la composición y dinámica de la Tierra te orienta a explorar recursos y prevenir desastres naturales.",
+    universities: "UCR"
+  },
+  {
+    name: "Estadística",
+    keywords: { "datos": 3, "matemática": 3, "números": 3, "análisis": 3, "precisión": 2, "lógica": 2 },
+    reason: "Tu capacidad para interpretar y modelar datos te convierte en un profesional clave en la era de la información.",
+    universities: "UCR, UNED"
+  },
+  // ===== AGRONOMÍA Y AMBIENTE =====
+  {
+    name: "Ingeniería Agronómica",
+    keywords: { "naturaleza": 3, "experimentación": 2, "sostenibilidad": 2, "impacto": 2, "producción": 2, "campo": 3 },
+    reason: "Tu conexión con el campo y la producción sostenible se alinean con esta carrera práctica y transformadora.",
+    universities: "UNA, TEC, UCR"
+  },
+  {
+    name: "Ingeniería Forestal",
+    keywords: { "naturaleza": 3, "sostenibilidad": 3, "impacto": 2, "recursos": 2, "observación": 2, "conservación": 3 },
+    reason: "Tu pasión por los bosques y la gestión sostenible de recursos naturales te lleva a una carrera de conservación activa.",
+    universities: "TEC, UNA"
+  },
+  {
+    name: "Zootecnia",
+    keywords: { "naturaleza": 2, "producción": 3, "animales": 3, "biología": 2, "sostenibilidad": 2, "campo": 2 },
+    reason: "Tu interés en la producción animal sostenible y el bienestar pecuario te orientan a una carrera agropecuaria.",
+    universities: "UNA, TEC"
+  },
+  {
+    name: "Gestión Ambiental",
+    keywords: { "sostenibilidad": 3, "naturaleza": 2, "impacto": 2, "recursos": 3, "innovación": 2, "conservación": 2 },
+    reason: "Tu compromiso ecológico y visión estratégica te preparan para liderar proyectos de sostenibilidad y gestión ambiental.",
+    universities: "UNED, UNA, TEC"
+  },
+  // ===== NEGOCIOS =====
+  {
+    name: "Administración de Empresas",
+    keywords: { "negocios": 3, "liderazgo": 3, "datos": 2, "independiente": 2, "impacto": 1, "emprendimiento": 2 },
+    reason: "Tu orientación empresarial y liderazgo te preparan para gestionar organizaciones y crear tus propios proyectos.",
+    universities: "Todas las universidades del país"
+  },
+  {
+    name: "Contaduría Pública",
+    keywords: { "datos": 3, "números": 3, "precisión": 2, "negocios": 2, "análisis": 2, "finanzas": 2 },
+    reason: "Tu capacidad analítica numérica y atención al detalle te posicionan en el corazón financiero de las empresas.",
+    universities: "UCR, UNA, UNED, Latina, Fidelitas, Hispanoamericana, ULAT, San Marcos"
+  },
+  {
+    name: "Economía",
+    keywords: { "datos": 3, "números": 2, "análisis": 3, "negocios": 2, "impacto": 2, "finanzas": 2 },
+    reason: "Tu capacidad para analizar mercados y tomar decisiones basadas en datos te prepara para entender la economía global.",
+    universities: "UCR, UNA, UNED, Latina, ULAT"
+  },
+  {
+    name: "Mercadeo",
+    keywords: { "creatividad": 3, "comunicación": 3, "innovación": 2, "contenido": 2, "negocios": 2, "ventas": 2 },
+    reason: "Tu creatividad y visión estratégica te convierten en un experto en conectar marcas con consumidores.",
+    universities: "ULAT, Fidelitas, Latina, Creativa, Hispanoamericana, UNED"
+  },
+  {
+    name: "Finanzas",
+    keywords: { "números": 3, "datos": 3, "negocios": 2, "análisis": 3, "precisión": 2, "independiente": 2 },
+    reason: "Tu habilidad para gestionar inversiones y analizar riesgos te prepara para el mundo de las finanzas corporativas.",
+    universities: "ULAT, Fidelitas, Latina, UNED"
+  },
+  {
+    name: "Negocios Internacionales",
+    keywords: { "negocios": 3, "comunicación": 2, "liderazgo": 2, "innovación": 2, "global": 2, "comercio": 3 },
+    reason: "Tu visión global y habilidades interculturales te preparan para liderar el comercio entre países.",
+    universities: "ULAT, Fidelitas, Latina, Hispanoamericana"
+  },
+  {
+    name: "Recursos Humanos",
+    keywords: { "personas": 3, "comunicación": 3, "liderazgo": 2, "equipo": 3, "organización": 2, "negocios": 2 },
+    reason: "Tu habilidad para conectar talento con oportunidades y tu sensibilidad social te destacan en gestión de personas.",
+    universities: "UNED, ULAT, Latina, Fidelitas"
+  },
+  {
+    name: "Turismo y Hotelería",
+    keywords: { "personas": 2, "comunicación": 2, "creatividad": 2, "organización": 2, "viajes": 3, "servicio": 3 },
+    reason: "Tu pasión por viajar y servir a otros te orienta a una carrera dinámica en la industria turística costarricense.",
+    universities: "UNA, UNED, UTN, Latina, Fidelitas"
+  },
+  // ===== EDUCACIÓN =====
+  {
+    name: "Educación Primaria",
+    keywords: { "personas": 3, "comunicación": 3, "impacto": 2, "enseñanza": 3, "equipo": 2, "creatividad": 2 },
+    reason: "Tu vocación por formar las mentes del futuro y tu paciencia te hacen un educador excepcional.",
+    universities: "UCR, UNA, UNED, Latina, San Marcos, Hispanoamericana"
+  },
+  {
+    name: "Enseñanza del Inglés",
+    keywords: { "comunicación": 3, "personas": 2, "enseñanza": 3, "global": 2, "idiomas": 3, "expresión": 2 },
+    reason: "Tu dominio de idiomas y pasión por enseñar abren puertas globales para ti y tus estudiantes.",
+    universities: "UCR, UNA, UNED, Latina, Fidelitas, San Marcos"
+  },
+  {
+    name: "Educación Física",
+    keywords: { "deporte": 3, "personas": 2, "enseñanza": 2, "salud": 2, "equipo": 2, "actividad": 3 },
+    reason: "Tu energía y amor por el deporte te preparan para promover salud y bienestar a través de la actividad física.",
+    universities: "UCR, UNA, UNED"
+  },
+  {
+    name: "Educación Especial",
+    keywords: { "personas": 3, "ayudar": 3, "enseñanza": 2, "impacto": 3, "equipo": 2, "inclusión": 3 },
+    reason: "Tu sensibilidad y compromiso con la inclusión te convierten en un agente de cambio para quienes más lo necesitan.",
+    universities: "UCR, UNA, UNED"
+  },
+  // ===== CIENCIAS SOCIALES =====
+  {
+    name: "Derecho",
+    keywords: { "comunicación": 2, "liderazgo": 2, "análisis": 2, "impacto": 3, "justicia": 3, "personas": 2 },
+    reason: "Tu capacidad de análisis crítico y pasión por la justicia te preparan para una carrera de impacto legal y social.",
+    universities: "UCR, UNA, UNED, ULAT, Hispanoamericana, Latina, Fidelitas, UACA, San Marcos, Americana"
+  },
+  {
+    name: "Ciencias Políticas",
+    keywords: { "comunicación": 2, "liderazgo": 3, "análisis": 2, "impacto": 3, "justicia": 2, "gobierno": 2 },
+    reason: "Tu interés por el poder, la sociedad y el cambio social te orientan a entender y transformar la política.",
+    universities: "UCR, UNA, ULAT"
+  },
+  {
+    name: "Sociología",
+    keywords: { "personas": 3, "análisis": 2, "impacto": 2, "investigación": 2, "sociedad": 3, "cambio": 2 },
+    reason: "Tu curiosidad por entender las dinámicas sociales te prepara para investigar y proponer soluciones a problemas colectivos.",
+    universities: "UCR, UNA"
+  },
+  {
+    name: "Trabajo Social",
+    keywords: { "ayudar": 3, "personas": 3, "comunicación": 2, "impacto": 3, "equipo": 2, "comunidad": 2 },
+    reason: "Tu vocación de servicio y compromiso con las comunidades te convierten en un agente de transformación social.",
+    universities: "UCR, UNA, UNED"
+  },
+  {
+    name: "Comunicación Colectiva",
+    keywords: { "comunicación": 3, "creatividad": 2, "expresión": 2, "contenido": 3, "innovación": 2, "personas": 2 },
+    reason: "Tu talento para contar historias y conectar con audiencias te lleva a los medios y la comunicación estratégica.",
+    universities: "UCR, UNA, ULAT, Latina, Fidelitas, Creativa, Hispanoamericana"
+  },
+  {
+    name: "Relaciones Internacionales",
+    keywords: { "comunicación": 2, "liderazgo": 2, "global": 3, "impacto": 2, "análisis": 2, "diplomacia": 3 },
+    reason: "Tu visión global y habilidades diplomáticas te preparan para representar intereses en el escenario internacional.",
+    universities: "UCR, UNA, ULAT, Latina, Fidelitas"
+  },
+  // ===== ARQUITECTURA Y DISEÑO =====
+  {
+    name: "Arquitectura",
+    keywords: { "creatividad": 3, "diseño": 3, "innovación": 2, "arte": 2, "construcción": 2, "proyectos": 2 },
+    reason: "Tu visión creativa y precisión técnica se combinan para diseñar espacios que transforman comunidades.",
+    universities: "UCR, UNA, Veritas, Latina, Fidelitas, Creativa"
+  },
+  {
+    name: "Diseño Gráfico",
+    keywords: { "creatividad": 3, "arte": 3, "innovación": 2, "expresión": 2, "contenido": 2, "visual": 3 },
+    reason: "Tu talento visual y capacidad de comunicar ideas te convierten en un creador de identidades y experiencias.",
+    universities: "UNA, Veritas, Creativa, Fidelitas, Latina, San Marcos"
+  },
+  {
+    name: "Diseño Industrial",
+    keywords: { "creatividad": 3, "diseño": 3, "innovación": 2, "tecnología": 2, "producción": 2, "productos": 3 },
+    reason: "Tu capacidad para crear objetos funcionales y estéticos te lleva a diseñar los productos del mañana.",
+    universities: "TEC, UNA, Veritas, Creativa"
+  },
+  {
+    name: "Diseño de Interiores",
+    keywords: { "creatividad": 3, "arte": 2, "diseño": 3, "innovación": 2, "estilo": 2, "espacios": 3 },
+    reason: "Tu sensibilidad estética y visión espacial te permiten transformar interiores en experiencias únicas.",
+    universities: "Veritas, Creativa, Latina, Fidelitas"
+  },
+  {
+    name: "Cine y Producción Audiovisual",
+    keywords: { "creatividad": 3, "arte": 2, "expresión": 3, "innovación": 2, "contenido": 2, "visual": 2 },
+    reason: "Tu pasión por contar historias a través de imágenes te lleva al mundo del cine, la TV y el contenido digital.",
+    universities: "Veritas, Creativa, UNA, ULAT"
+  },
+  // ===== ARTES =====
+  {
+    name: "Artes Plásticas",
+    keywords: { "creatividad": 3, "arte": 3, "expresión": 3, "innovación": 2, "visual": 2, "estilo": 2 },
+    reason: "Tu sensibilidad artística y necesidad de expresarte te llevan a explorar y transformar el mundo del arte.",
+    universities: "UCR, UNA"
+  },
+  {
+    name: "Música",
+    keywords: { "creatividad": 3, "arte": 3, "expresión": 3, "innovación": 2, "disciplina": 2, "estilo": 2 },
+    reason: "Tu talento musical y dedicación te preparan para una carrera de interpretación, composición o educación musical.",
+    universities: "UCR, UNA"
+  },
+  {
+    name: "Artes Escénicas (Teatro y Danza)",
+    keywords: { "creatividad": 3, "arte": 3, "expresión": 3, "personas": 2, "equipo": 2, "escenario": 3 },
+    reason: "Tu pasión por el escenario y la expresión corporal te lleva a una carrera artística de impacto cultural.",
+    universities: "UCR, UNA"
+  },
+  // ===== INFORMÁTICA / TI =====
+  {
+    name: "Informática Empresarial",
+    keywords: { "tecnología": 3, "negocios": 3, "datos": 2, "programación": 2, "innovación": 2, "organización": 2 },
+    reason: "Tu visión para integrar tecnología con estrategia empresarial te prepara para liderar la transformación digital.",
+    universities: "UCR, UNED, Fidelitas, Latina"
+  },
+  {
+    name: "Ciberseguridad",
+    keywords: { "tecnología": 3, "programación": 2, "lógica": 3, "innovación": 2, "protección": 3, "datos": 2 },
+    reason: "Tu habilidad para proteger sistemas y anticipar amenazas te convierte en un guardián del mundo digital.",
+    universities: "ULAT, Fidelitas, TEC"
+  },
+  {
+    name: "Ciencia de Datos",
+    keywords: { "datos": 3, "tecnología": 3, "matemática": 3, "análisis": 3, "programación": 2, "innovación": 2 },
+    reason: "Tu capacidad para extraer conocimiento de grandes volúmenes de datos te hace invaluable en la era digital.",
+    universities: "ULAT, TEC, Fidelitas, UCR"
+  },
+  {
+    name: "Inteligencia Artificial",
+    keywords: { "tecnología": 3, "innovación": 3, "programación": 3, "lógica": 3, "datos": 3, "desarrollo": 2 },
+    reason: "Tu fascinación por crear sistemas inteligentes te coloca en la frontera de la innovación tecnológica mundial.",
+    universities: "ULAT, Fidelitas, TEC"
+  },
+  // ===== TECNOLOGÍAS ESPECÍFICAS =====
+  {
+    name: "Ingeniería Electrónica",
+    keywords: { "tecnología": 3, "física": 2, "innovación": 2, "diseño": 2, "precisión": 2, "circuitos": 3 },
+    reason: "Tu comprensión de los circuitos y sistemas electrónicos te lleva a diseñar dispositivos que impulsan el mundo moderno.",
+    universities: "TEC, UNED, Latina, Fidelitas"
+  },
+  {
+    name: "Ingeniería en Telecomunicaciones",
+    keywords: { "tecnología": 3, "innovación": 2, "física": 2, "comunicación": 3, "redes": 3, "global": 2 },
+    reason: "Tu interés por conectar personas y sistemas te prepara para diseñar las redes de comunicación del futuro.",
+    universities: "TEC, Fidelitas, Latina"
+  },
+  {
+    name: "Ingeniería en Alimentos",
+    keywords: { "ciencia": 3, "química": 2, "experimentación": 2, "producción": 2, "salud": 2, "alimentos": 3 },
+    reason: "Tu interés por la ciencia aplicada a la producción de alimentos te lleva a innovar en la industria alimentaria.",
+    universities: "TEC, UCR"
+  },
+  {
+    name: "Ingeniería en Materiales",
+    keywords: { "ciencia": 3, "química": 2, "física": 2, "innovación": 2, "experimentación": 2, "producción": 2 },
+    reason: "Tu curiosidad por la composición y propiedades de los materiales te orienta a crear sustancias del futuro.",
+    universities: "TEC"
+  },
+  // ===== OTRAS CARRERAS =====
+  {
+    name: "Gastronomía",
+    keywords: { "creatividad": 3, "arte": 2, "innovación": 2, "expresión": 2, "alimentos": 3, "servicio": 2 },
+    reason: "Tu pasión por la cocina y la creatividad culinaria te preparan para destacar en la industria gastronómica.",
+    universities: "UTN, INA, Latina"
+  },
+  {
+    name: "Topografía",
+    keywords: { "naturaleza": 2, "matemática": 3, "precisión": 3, "proyectos": 2, "construcción": 2, "medición": 3 },
+    reason: "Tu precisión y capacidad para medir y representar el terreno te hacen esencial en todo proyecto de construcción.",
+    universities: "TEC, UNA"
+  },
+  {
+    name: "Administración de Servicios de Salud",
+    keywords: { "salud": 3, "organización": 2, "liderazgo": 2, "personas": 2, "negocios": 2, "impacto": 2 },
+    reason: "Tu visión gerencial aplicada al sector salud te prepara para gestionar centros médicos y programas sanitarios.",
+    universities: "UNED"
+  },
+  {
+    name: "Gestión del Recurso Hídrico",
+    keywords: { "sostenibilidad": 3, "recursos": 3, "ciencia": 2, "naturaleza": 2, "impacto": 2, "conservación": 2 },
+    reason: "Tu compromiso con el agua como recurso vital te orienta a una carrera estratégica para el desarrollo sostenible.",
+    universities: "TEC, UNA"
   }
 ];
 
