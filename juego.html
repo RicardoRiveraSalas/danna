@@ -3,53 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="description" content="Lumi Vuelo - Juego de esquivar obstáculos volando con Danna">
+<meta name="description" content="Lumi Parejas - Juego de memoria encontrando pares de imágenes">
 <meta name="theme-color" content="#302b63">
-<title>Lumi · Vuelo</title>
+<title>Lumi · Parejas</title>
 <link rel="stylesheet" href="css/juego.css">
 </head>
 <body>
 <div class="app-container">
   <div class="header">
     <div class="logo-badge">
-      <img src="fotos/danna.png" alt="Danna Rivera" class="avatar-mini" id="avatarMini">
-      <div class="logo">🧹 LUMI VUELO</div>
+      <img src="fotos/danna.png" alt="Danna Rivera" class="avatar-mini">
+      <div class="logo">🃏 LUMI PAREJAS</div>
     </div>
-    <p class="subtitle">Esquiva obstáculos volando</p>
+    <p class="subtitle">Encuentra todos los pares</p>
   </div>
 
   <div id="gameContainer">
     <div id="hud">
-      <div class="hud-item">⭐ <span id="score">0</span></div>
+      <div class="hud-item">🎯 <span id="level">1</span></div>
       <div class="hud-divider"></div>
-      <div class="hud-item">🏆 <span id="highScore">0</span></div>
+      <div class="hud-item">⭐ <span id="pairs">0</span>/<span id="totalPairs">6</span></div>
+      <div class="hud-divider"></div>
+      <div class="hud-item">👆 <span id="moves">0</span></div>
     </div>
 
-    <div id="gameArea">
-      <canvas id="gameCanvas"></canvas>
-    </div>
+    <div id="board"></div>
 
     <div id="overlay">
       <div id="startScreen">
         <div class="overlay-card">
-          <div class="witch-preview">
-            <img src="fotos/danna.png" alt="Danna" class="preview-img">
-            <div class="preview-broom"></div>
-          </div>
-          <h2>🧹 ¡A volar!</h2>
-          <p>Usa las <strong>flechas</strong> del teclado<br>para esquivar los obstáculos</p>
-          <p class="controls-hint">⬆️ ⬇️ ⬅️ ➡️</p>
+          <h2>🃏 Buscar Parejas</h2>
+          <p>Volteá las cartas y encontrá<br>todos los pares de imágenes</p>
+          <p class="controls-hint">Cada nivel tiene una imagen más</p>
           <button id="startBtn">Comenzar</button>
         </div>
       </div>
-      <div id="gameOverScreen" style="display:none">
+      <div id="winScreen" style="display:none">
         <div class="overlay-card">
-          <div class="crash-icon">💥</div>
-          <h2>¡Chocaste!</h2>
-          <p class="final-score-label">Puntuación</p>
-          <p class="final-score" id="finalScore">0</p>
-          <p class="best-label">Mejor: <span id="finalBest">0</span></p>
-          <button id="restartBtn">Reintentar</button>
+          <div class="crash-icon">🎉</div>
+          <h2>¡Nivel <span id="winLevel">1</span> completo!</h2>
+          <p id="winStats">6 pares en 8 movimientos</p>
+          <button id="nextBtn">Siguiente nivel</button>
         </div>
       </div>
     </div>
