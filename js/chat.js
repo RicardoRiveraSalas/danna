@@ -87,7 +87,7 @@ function updateBadge(backend, status) {
   if (status === 'loading' || status === 'downloading') {
     cls = 'ia-loading';
     text = '\u23f3 Cargando...';
-  } else if (backend && map[backend]) {
+  } else if (backend && backend !== 'off' && map[backend]) {
     cls = 'ia-active';
     text = map[backend].icon + ' ' + map[backend].label;
   } else {
@@ -155,10 +155,6 @@ window.addEventListener('ai-status', (e) => {
     progressBar.style.display = 'none';
     updateBadge('off', '');
     addMessage(message || 'Error al cargar la IA. Usare respuestas predefinidas.', 'bot');
-    // Auto-cambiar selector a 'off' cuando falla un backend
-    if (aiBackend && aiBackend.value !== 'off') {
-      aiBackend.value = 'off';
-    }
   }
 });
 
