@@ -11,10 +11,12 @@ const statusText = document.getElementById('statusText');
 const progressBar = document.getElementById('progressBar');
 const progressFill = document.getElementById('progressFill');
 const clearBtn = document.getElementById('clearBtn');
+const iaBadge = document.getElementById('iaBadge');
 
 let aiEnabled = false;
 let awaitingOffer = false;
 let conversationHistory = [];
+let noAiWarningShown = false;
 
 function saveHistory() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(conversationHistory)); } catch (e) {}
@@ -78,6 +80,18 @@ function addMessage(text, role) {
   renderMessage(text, role, entry.ts);
 }
 
+function updateBadge(status) {
+  if (!iaBadge) return;
+  const map = {
+    ready: { text: '🧠 IA Local', cls: 'ia-active' },
+    loading: { text: '⏳ Cargando...', cls: 'ia-loading' },
+    off: { text: '🌐 Modo sin IA', cls: 'ia-inactive' }
+  };
+  const s = map[status] || map.off;
+  iaBadge.textContent = s.text;
+  iaBadge.className = 'badge ' + s.cls;
+}
+
 function setLoading(loading) {
   sendBtn.disabled = loading;
   sendBtn.textContent = loading ? '…' : '➤';
@@ -110,6 +124,7 @@ window.addEventListener('ai-status', (e) => {
   if (status === 'nogpu') {
     statusBar.style.display = 'none';
     awaitingOffer = false;
+    updateBadge('off');
   } else if (status === 'downloading') {
     statusIcon.textContent = '⏳';
     statusText.textContent = message || 'Descargando IA local...';
@@ -117,15 +132,18 @@ window.addEventListener('ai-status', (e) => {
     statusBar.style.display = 'flex';
     const pctMatch = message?.match(/(\d+)%/);
     if (pctMatch) progressFill.style.width = pctMatch[1] + '%';
+    updateBadge('loading');
   } else if (status === 'ready') {
     statusBar.style.display = 'none';
     progressBar.style.display = 'none';
     aiEnabled = true;
+    updateBadge('ready');
     setTimeout(() => addMessage(window.__ai.prompts.readyMessage, 'bot'), 400);
   } else if (status === 'error') {
     statusBar.style.display = 'none';
     progressBar.style.display = 'none';
     aiEnabled = false;
+    updateBadge('off');
     addMessage(message || '😅 No se pudo cargar la IA local. Usaré respuestas predefinidas.', 'bot');
   }
 });
@@ -183,6 +201,7 @@ async function sendMessage() {
     // no or anything else → reject + answer
     setPreference('no');
     aiEnabled = false;
+    updateBadge('off');
     addMessage(window.__ai.prompts.rejectLocal, 'bot');
     await new Promise(r => setTimeout(r, 200 + Math.random() * 200));
     addMessage(localReply(text), 'bot');
@@ -197,6 +216,10 @@ async function sendMessage() {
     reply = await window.__ai.generateReply(text, ctx);
   }
   if (!reply) {
+    if (!noAiWarningShown) {
+      addMessage('🌐 **Modo sin IA.** Las respuestas son predefinidas y no usan la IA local. Puedes activarla borrando la conversación con 🗑️ y respondiendo **"Sí"** cuando se te ofrezca.', 'system');
+      noAiWarningShown = true;
+    }
     await new Promise(r => setTimeout(r, 200 + Math.random() * 200));
     reply = localReply(text);
   }
@@ -229,6 +252,8 @@ clearBtn?.addEventListener('click', () => {
   welcome.style.display = 'flex';
   awaitingOffer = false;
   aiEnabled = false;
+  updateBadge('off');
+  noAiWarningShown = false;
   userInput.focus();
   setTimeout(() => {
     if (navigator.gpu) {
@@ -253,4 +278,18 @@ if (!hasHistory) {
       addMessage(window.__ai.prompts.welcomeNoGPU, 'bot');
     }
   }, 300);
+}
+
+// ── Estado inicial del badge y auto-arranque ──
+
+if (!navigator.gpu) {
+  updateBadge('off');
+} else {
+  const pref = getPreference();
+  if (pref === 'yes') {
+    updateBadge('loading');
+    window.__ai.start();
+  } else {
+    updateBadge('off');
+  }
 }

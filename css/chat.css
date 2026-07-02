@@ -288,3 +288,38 @@ footer{
 }
 .theme-select option{background:#1a1a2e;color:#fff}
 [data-theme="retro"] .theme-select option{background:#c0c0c0;color:#000}
+
+/* ── Badge de estado IA ── */
+.badge{
+  display:inline-block;font-size:.65rem;padding:2px 10px;border-radius:20px;
+  color:#fff;margin-left:10px;vertical-align:middle;font-weight:600;
+  letter-spacing:.3px;transition:all .3s ease
+}
+.badge.ia-active{background:#2ecc71}
+.badge.ia-loading{background:#f1c40f;animation:badgePulse 1s infinite}
+.badge.ia-inactive{background:#e67e22}
+@keyframes badgePulse{
+  0%{opacity:1}50%{opacity:.6}100%{opacity:1}
+}
+
+/* ── Mensajes de sistema ── */
+.msg.system{justify-content:center}
+.msg.system .msg-bubble{
+  background:rgba(255,193,7,.15);border:1px solid rgba(255,193,7,.3);
+  border-radius:10px;color:#f0d060;font-size:.8rem;text-align:center;
+  max-width:90%;padding:6px 14px;backdrop-filter:blur(4px)
+}
+.msg.system .msg-avatar,.msg.system .msg-time{display:none}
+
+/* ── Retro: Badge ── */
+[data-theme="retro"] .badge{
+  border-radius:0;border:1px solid #000;padding:1px 6px;
+  font-size:.7rem;font-weight:400
+}
+[data-theme="retro"] .badge.ia-active{background:#008000;color:#fff}
+[data-theme="retro"] .badge.ia-loading{background:#808000;color:#fff;animation:none}
+[data-theme="retro"] .badge.ia-inactive{background:#800;color:#fff}
+[data-theme="retro"] .msg.system .msg-bubble{
+  border-radius:0;background:#ffffcc;border:1px solid #000;
+  color:#000;backdrop-filter:none
+}
