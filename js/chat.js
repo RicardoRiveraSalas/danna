@@ -8,15 +8,13 @@ const welcome = document.getElementById('welcome');
 const statusBar = document.getElementById('statusBar');
 const statusIcon = document.getElementById('statusIcon');
 const statusText = document.getElementById('statusText');
+const progressBar = document.getElementById('progressBar');
+const progressFill = document.getElementById('progressFill');
 const clearBtn = document.getElementById('clearBtn');
 
-let aiAvailable = false;
 let aiEnabled = false;
-let aiWelcomeShown = false;
-let panfoThisSession = false;
+let awaitingOffer = false;
 let conversationHistory = [];
-
-// ── Persistencia ──
 
 function saveHistory() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(conversationHistory)); } catch (e) {}
@@ -40,8 +38,6 @@ function loadHistory() {
 function getPreference() { return localStorage.getItem(PREF_KEY); }
 function setPreference(v) { try { localStorage.setItem(PREF_KEY, v); } catch (e) {} }
 function clearPreference() { try { localStorage.removeItem(PREF_KEY); } catch (e) {} }
-
-// ── Render ──
 
 function getTime(ts) {
   const d = ts ? new Date(ts) : new Date();
@@ -106,59 +102,35 @@ function setLoading(loading) {
   }
 }
 
-// ── Manejo de estado de IA ──
+// ── Status events from chat-ai.js ──
 
-window.addEventListener('ai-status', async (e) => {
+window.addEventListener('ai-status', (e) => {
   const { status, message } = e.detail;
 
-  if (status === 'checking') {
-    statusIcon.textContent = '🔍';
-    statusText.textContent = 'Verificando IA local disponible...';
+  if (status === 'nogpu') {
+    statusBar.style.display = 'none';
+    awaitingOffer = false;
+  } else if (status === 'downloading') {
+    statusIcon.textContent = '⏳';
+    statusText.textContent = message || 'Descargando IA local...';
+    progressBar.style.display = 'flex';
     statusBar.style.display = 'flex';
-  } else if (status === 'unavailable') {
-    statusBar.style.display = 'none';
-    aiAvailable = false;
-    if (!aiWelcomeShown && conversationHistory.length === 0) {
-      aiWelcomeShown = true;
-      addMessage(window.__ai.prompts.welcomeNoLocal, 'bot');
-    }
-  } else if (status === 'available') {
-    statusBar.style.display = 'none';
-    aiAvailable = true;
-    const pref = getPreference();
-    if (pref === 'yes') {
-      const ok = await window.__ai.createSession();
-      if (!ok) {
-        panfoThisSession = true;
-        if (!aiWelcomeShown && conversationHistory.length === 0) {
-          aiWelcomeShown = true;
-          addMessage(window.__ai.prompts.welcomeNoLocal, 'bot');
-        }
-      }
-    } else if (pref === 'no') {
-      aiEnabled = false;
-      if (!aiWelcomeShown && conversationHistory.length === 0) {
-        aiWelcomeShown = true;
-        addMessage(window.__ai.prompts.rejectLocal, 'bot');
-      }
-    } else if (!aiWelcomeShown && conversationHistory.length === 0) {
-      aiWelcomeShown = true;
-      addMessage(window.__ai.prompts.welcomeWithOffer, 'bot');
-    }
+    const pctMatch = message?.match(/(\d+)%/);
+    if (pctMatch) progressFill.style.width = pctMatch[1] + '%';
   } else if (status === 'ready') {
+    statusBar.style.display = 'none';
+    progressBar.style.display = 'none';
     aiEnabled = true;
-    if (!aiWelcomeShown && conversationHistory.length === 0) {
-      aiWelcomeShown = true;
-      setTimeout(() => addMessage(window.__ai.prompts.acceptLocal, 'bot'), 400);
-    }
-  } else if (status === 'panfo') {
+    setTimeout(() => addMessage(window.__ai.prompts.readyMessage, 'bot'), 400);
+  } else if (status === 'error') {
+    statusBar.style.display = 'none';
+    progressBar.style.display = 'none';
     aiEnabled = false;
-    panfoThisSession = true;
-    if (message) addMessage(message, 'bot');
+    addMessage(message || '😅 No se pudo cargar la IA local. Usaré respuestas predefinidas.', 'bot');
   }
 });
 
-// ── Respuesta predefinida (fallback contextual) ──
+// ── Fallback ──
 
 function localReply(text) {
   const t = text.toLowerCase();
@@ -186,7 +158,7 @@ function localReply(text) {
   return 'Cuéntame más sobre eso. Si tienes dudas sobre carreras, estudios o necesitas orientación, puedo ayudarte. También prueba la Ruta Vocacional 🌱 desde la página principal.';
 }
 
-// ── Envío de mensajes ──
+// ── Envío ──
 
 async function sendMessage() {
   const text = userInput.value.trim();
@@ -197,29 +169,18 @@ async function sendMessage() {
   addMessage(text, 'user');
   setLoading(true);
 
-  // ── Primera vez: detectar "sí"/"no" a la oferta ──
-  const pref = getPreference();
-  if (!pref && aiAvailable && conversationHistory.length <= 2) {
+  // ── Offer state: waiting for sí/no ──
+  if (awaitingOffer) {
+    awaitingOffer = false;
     const lower = text.toLowerCase();
     if (lower === 'sí' || lower === 'si' || lower === 'sisí' || lower === 's' || lower === 'yes') {
       setPreference('yes');
-      const ok = await window.__ai.createSession();
-      if (!ok) {
-        panfoThisSession = true;
-        aiEnabled = false;
-        addMessage(window.__ai.prompts.fallbackPanfo, 'bot');
-      }
+      addMessage(window.__ai.prompts.acceptLocal, 'bot');
+      window.__ai.start();
       setLoading(false);
       return;
     }
-    if (lower === 'no' || lower === 'nop' || lower === 'n') {
-      setPreference('no');
-      aiEnabled = false;
-      addMessage(window.__ai.prompts.rejectLocal, 'bot');
-      setLoading(false);
-      return;
-    }
-    // First real message: treat as "no" but still answer
+    // no or anything else → reject + answer
     setPreference('no');
     aiEnabled = false;
     addMessage(window.__ai.prompts.rejectLocal, 'bot');
@@ -229,9 +190,9 @@ async function sendMessage() {
     return;
   }
 
-  // ── Responder con IA local o fallback ──
+  // ── Normal response ──
   let reply = null;
-  if (aiEnabled && !panfoThisSession) {
+  if (aiEnabled) {
     const ctx = conversationHistory.slice(-8, -1);
     reply = await window.__ai.generateReply(text, ctx);
   }
@@ -266,35 +227,30 @@ clearBtn?.addEventListener('click', () => {
   clearPreference();
   messagesEl.querySelectorAll('.msg').forEach(el => el.remove());
   welcome.style.display = 'flex';
-  aiWelcomeShown = false;
-  panfoThisSession = false;
+  awaitingOffer = false;
   aiEnabled = false;
-  aiAvailable = false;
-  window.__ai.destroySession();
   userInput.focus();
-  // Re-detect AI after clear
-  window.__ai.detect().then(avail => {
-    if (avail) {
-      statusBar.style.display = 'none';
-      aiAvailable = true;
-      setTimeout(() => addMessage(window.__ai.prompts.welcomeWithOffer, 'bot'), 300);
+  setTimeout(() => {
+    if (navigator.gpu) {
+      addMessage(window.__ai.prompts.welcomeOffer, 'bot');
+      awaitingOffer = true;
     } else {
-      aiAvailable = false;
-      setTimeout(() => addMessage(window.__ai.prompts.welcomeNoLocal, 'bot'), 300);
+      addMessage(window.__ai.prompts.welcomeNoGPU, 'bot');
     }
-    aiWelcomeShown = true;
-  });
+  }, 300);
 });
 
-// ── Inicialización ──
+// ── Inicio ──
 
 const hasHistory = loadHistory();
-if (hasHistory) aiWelcomeShown = true;
 
-window.__ai.detect().then(avail => {
-  aiAvailable = avail;
-  if (!avail && !aiWelcomeShown && conversationHistory.length === 0) {
-    aiWelcomeShown = true;
-    addMessage(window.__ai.prompts.welcomeNoLocal, 'bot');
-  }
-});
+if (!hasHistory) {
+  setTimeout(() => {
+    if (navigator.gpu) {
+      addMessage(window.__ai.prompts.welcomeOffer, 'bot');
+      awaitingOffer = true;
+    } else {
+      addMessage(window.__ai.prompts.welcomeNoGPU, 'bot');
+    }
+  }, 300);
+}

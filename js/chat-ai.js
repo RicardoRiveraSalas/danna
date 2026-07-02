@@ -1,10 +1,8 @@
 // ============================================================
-// PROMPTS CENTRALIZADOS (Sistema + Interfaz + Fallback)
+// PROMPTS CENTRALIZADOS
 // ============================================================
 
 const PROMPTS = {
-
-  // ── Personalidad fija para la IA local ──
   systemPersonality: `Eres un asesor educativo experto, paciente y extremadamente confiable, especializado en acompañar a estudiantes de todos los niveles.
 
 Reglas estrictas de comportamiento:
@@ -15,132 +13,126 @@ Reglas estrictas de comportamiento:
 5. Fomentas el pensamiento crítico: en lugar de dar la respuesta directa, a menudo devuelves una pregunta que lo guíe a descubrir la solución por sí mismo.
 6. Tu tono es motivador pero realista. Usas emojis moderadamente (🧠, 📚, ✨, 🎯) para hacer la conversación amena.
 7. Tienes memoria dentro de la conversación, así que retomas temas anteriores si el estudiante vuelve a preguntar sobre ellos.
-8. Si te preguntan por tus capacidades, dices que eres una IA local privada que no guarda datos en internet.
+8. Si te preguntan por tus capacidades, dices que eres una IA local privada que no guarda datos en internet y que funciona completamente en su navegador usando WebGPU.
 9. El sitio web es de Danna Rivera, estudiante de Diseño en CEDES Don Bosco, Costa Rica.`,
 
-  // ── Pre-contexto que se antepone a cada consulta ──
-  preContext: `[CONTEXTO ACTUAL]: Eres un asesor académico. El usuario es un estudiante que busca aprender. Debes responder SÍ o SÍ en español, de forma clara y didáctica. Si la pregunta no es académica, igual la respondes con amabilidad pero enfocas la respuesta hacia el aprendizaje o la curiosidad intelectual.`,
+  welcomeOffer: `👋 **¡Hola, futuro genio!** Veo que es tu primera vez aquí.
 
-  // ── Mensajes de interfaz ──
-
-  welcomeWithOffer: `👋 **¡Hola, futuro genio!** Veo que es tu primera vez aquí.
-
-Tu navegador tiene una **Inteligencia Artificial propia y LOCAL** (Prompt API). Esto significa que tus preguntas **NO salen de tu computadora**, es súper rápida y totalmente privada.
+Puedo activar una **Inteligencia Artificial LOCAL** en tu navegador usando WebGPU. Tus preguntas **NO salen de tu computadora**, es privada y gratuita.
 
 Con ella puedo ayudarte a resolver ecuaciones, redactar ensayos, entender conceptos difíciles, programar, analizar literatura y prácticamente **TODO** lo que se te ocurra para tus estudios.
 
-¿Quieres activar este superpoder local?
-*(Escribe **"Sí"** para activarla o **"No"** para usar el modo de respuestas predefinidas)*.`,
+La primera vez debe descargar el modelo (~700MB), pero luego queda en caché.
 
-  acceptLocal: `✅ **¡Excelente elección!** Has activado la IA local.
+¿Quieres activarla? *(Escribe **"Sí"** para descargar e iniciar, o **"No"** para usar respuestas predefinidas)*.`,
 
-A partir de ahora, todas tus dudas se resuelven aquí en tu navegador, sin enviar datos a ningún servidor. Pregúntame lo que sea sobre tus estudios, ¡estoy listo para asesorarte!`,
+  acceptLocal: `✅ **¡Excelente elección!** Descargando el modelo de IA local...
 
-  rejectLocal: `🌐 **¡Entendido!** Usaré mi modo de respuestas predefinidas para ayudarte.
+Esto puede tomar unos minutos dependiendo de tu conexión. **No recargues la página**. Cuando termine, estaré listo para asesorarte.`,
 
-No dudes en consultarme, ¡estoy aquí para guiarte en tu aprendizaje!`,
+  rejectLocal: `🌐 **¡Entendido!** Usaré mi modo de respuestas predefinidas para ayudarte. No dudes en consultarme.`,
 
-  fallbackPanfo: `🤯 **¡Uy, panfo!**
+  welcomeNoGPU: `🌐 **¡Hola!**
 
-La IA local se tomó un descanso (su proceso finalizó inesperadamente). Pero ¡tranqui! Automáticamente activo el **modo contextual** para que no te quedes sin ayuda.
+Tu navegador no tiene **WebGPU** habilitado (necesario para la IA local), o no es compatible. Para activarlo, usa Chrome/Brave y ve a \`brave://flags/#enable-webgpu\` o \`chrome://flags/#enable-webgpu\`.
 
-Esta modalidad de respuestas **durará todo el tiempo que sigamos conversando**. ¡Sigo siendo tu asesor personal, así que dale con tu pregunta!`,
+Mientras tanto, usaré mi **modo de respuestas predefinidas**. ¡Seguiré siendo tu asesor!`,
 
-  welcomeNoLocal: `🌐 **¡Hola!**
-
-Tu navegador no tiene la IA local habilitada (o no es compatible), así que usaré mi **modo de respuestas predefinidas** para ayudarte.
-
-No te preocupes, ¡seguiré siendo tu asesor de confianza para lo que necesites! Dime, ¿qué tema vamos a dominar hoy?`
+  readyMessage: `🧠 **¡IA local lista!** El modelo se ha cargado correctamente. Ahora todas tus consultas se procesan aquí en tu navegador, sin internet. ¿En qué necesitas ayuda?`
 };
 
 // ============================================================
-// ESTADO DE LA IA
+// ESTADO
 // ============================================================
 
-let session = null;
-let localAIReady = false;
-let panfoMode = false;
+let engine = null;
+let modelReady = false;
+let loading = false;
 
-function dispatch(status, msg) {
+function dispatch(status, message) {
   window.__aiStatus = status;
-  window.__aiMessage = msg || '';
+  window.__aiMessage = message || '';
   window.dispatchEvent(new CustomEvent('ai-status', {
-    detail: { status, message: msg || '' }
+    detail: { status, message: message || '' }
   }));
 }
 
 // ============================================================
-// DETECCIÓN DEL NAVEGADOR (window.ai)
+// INICIALIZAR WEBLLM
 // ============================================================
 
-async function detectLocalAI() {
-  dispatch('checking', 'Verificando IA local disponible...');
+async function startWebLLM() {
+  if (loading || modelReady) return;
+  loading = true;
+
+  dispatch('downloading', 'Verificando WebGPU...');
+
   try {
-    if (window.ai && typeof window.ai.createTextSession === 'function') {
-      dispatch('available', '');
-      return true;
+    if (!navigator.gpu) {
+      dispatch('nogpu', 'WebGPU no disponible.');
+      loading = false;
+      return;
     }
-  } catch (e) { /* seguro */ }
-  dispatch('unavailable', '');
-  return false;
-}
 
-// ============================================================
-// CREACIÓN / DESTRUCCIÓN DE SESIÓN
-// ============================================================
+    dispatch('downloading', 'Conectando con WebLLM...');
 
-async function createSession() {
-  try {
-    session = await window.ai.createTextSession({
-      systemPrompt: PROMPTS.systemPersonality
+    const { MLCEngine } = await import('https://esm.run/@mlc-ai/web-llm');
+
+    engine = new MLCEngine();
+
+    engine.setInitProgressCallback((report) => {
+      if (report.progress && report.progress > 0) {
+        const pct = Math.min(99, Math.round(report.progress * 100));
+        dispatch('downloading', `Descargando IA local... ${pct}% (No recargues la página).`);
+      } else if (report.text) {
+        dispatch('downloading', report.text);
+      }
     });
-    localAIReady = true;
-    dispatch('ready', '');
-    return true;
-  } catch (err) {
-    console.error('Error al crear sesión IA:', err);
-    return false;
-  }
-}
 
-function destroySession() {
-  if (session) {
-    try { session.destroy(); } catch (e) { /* seguro */ }
-    session = null;
+    dispatch('downloading', 'Iniciando descarga del modelo (~700MB la primera vez)...');
+    await engine.reload('Llama-3.2-1B-Instruct-q4f16_0-MLC');
+
+    modelReady = true;
+    dispatch('ready', '');
+  } catch (err) {
+    console.error('Error WebLLM:', err);
+    dispatch('error', 'Error al cargar la IA local: ' + (err.message || 'desconocido'));
+  } finally {
+    loading = false;
   }
-  localAIReady = false;
 }
 
 // ============================================================
-// GENERACIÓN DE RESPUESTA
+// GENERAR RESPUESTA
 // ============================================================
 
 async function generateReply(text, history) {
-  if (!session || !localAIReady) return null;
+  if (!engine || !modelReady) return null;
   try {
-    let context = '';
+    const messages = [{ role: 'system', content: PROMPTS.systemPersonality }];
+
     if (history && history.length > 0) {
       const recent = history.slice(-6);
-      context = '\nHistorial de la conversación:\n' + recent.map(m =>
-        (m.role === 'user' ? 'Usuario' : 'Asesor') + ': ' + m.text
-      ).join('\n');
+      for (const m of recent) {
+        messages.push({
+          role: m.role === 'user' ? 'user' : 'assistant',
+          content: m.text
+        });
+      }
     }
 
-    const fullPrompt = [
-      PROMPTS.preContext,
-      context ? '\n' + context : '',
-      '\n\nEl estudiante dice:',
-      text,
-      '\n\nRespuesta:'
-    ].join('');
+    messages.push({ role: 'user', content: text });
 
-    const reply = await session.prompt(fullPrompt);
-    return reply.trim();
+    const reply = await engine.chat.completions.create({
+      messages,
+      stream: false,
+      max_tokens: 500,
+      temperature: 0.7
+    });
+
+    return reply.choices[0]?.message?.content?.trim() || null;
   } catch (err) {
-    console.error('Error en IA local:', err);
-    localAIReady = false;
-    panfoMode = true;
-    dispatch('panfo', PROMPTS.fallbackPanfo);
+    console.error('Error generando respuesta:', err);
     return null;
   }
 }
@@ -150,11 +142,9 @@ async function generateReply(text, history) {
 // ============================================================
 
 window.__ai = {
-  detect: detectLocalAI,
-  createSession: createSession,
-  generateReply: generateReply,
-  destroySession: destroySession,
-  get isReady() { return localAIReady; },
-  get isPanfo() { return panfoMode; },
+  start: startWebLLM,
+  generateReply,
+  get isReady() { return modelReady; },
+  get isLoading() { return loading; },
   prompts: PROMPTS
 };

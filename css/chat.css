@@ -117,9 +117,19 @@ body{
   border-radius:12px;margin-bottom:10px;font-size:.82em;opacity:.85;
   flex-wrap:wrap;transition:all .4s ease
 }
+.status-bar .progress-bar{
+  flex:1;min-width:100px;height:4px;background:rgba(255,255,255,.1);
+  border-radius:2px;overflow:hidden;margin-top:2px
+}
+.status-bar .progress-fill{
+  height:100%;background:linear-gradient(90deg,#ff69b4,#00bfff);
+  border-radius:2px;transition:width .3s ease;width:0%
+}
 [data-theme="retro"] .status-bar{
   background:#d4d4d4;border:2px inset #ccc;border-radius:0;color:#000
 }
+[data-theme="retro"] .status-bar .progress-bar{background:#808080}
+[data-theme="retro"] .status-bar .progress-fill{background:#000080}
 .input-area{
   display:flex;gap:8px;padding-top:15px;border-top:1px solid rgba(255,255,255,.1)
 }
