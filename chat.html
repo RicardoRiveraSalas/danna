@@ -8,6 +8,13 @@
         #chatbox { height: 300px; border: 1px solid #ccc; overflow-y: scroll; padding: 10px; margin-bottom: 10px; }
         #user-input { width: 80%; padding: 8px; }
         #send-btn { width: 15%; padding: 8px; }
+        .nav-buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+        .ruta-btn{background:linear-gradient(135deg,#ff69b4,#00bfff);color:#fff;text-decoration:none;padding:10px 20px;border-radius:25px;font-weight:600;font-size:.85em;cursor:pointer;transition:all .3s ease;box-shadow:0 4px 15px rgba(255,69,180,.3);display:flex;align-items:center;gap:6px;border:none}
+        .ruta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,69,180,.5)}
+        @media(max-width:600px){.ruta-btn{padding:8px 14px;font-size:.8em}}
+        footer{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-top:1px solid rgba(255,255,255,.1);padding:20px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:20px}
+        .footer-name{font-weight:600;font-size:.9em;opacity:.8}
+        @media(max-width:600px){footer{padding:15px 20px;flex-direction:column;text-align:center}}
     </style>
 </head>
 <body>
@@ -61,5 +68,12 @@
             }
         });
     </script>
+    <footer>
+      <span class="footer-name">Danna Rivera</span>
+      <div class="nav-buttons">
+        <a href="index.html" class="ruta-btn">🏠 Inicio</a>
+        <a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
+      </div>
+    </footer>
 </body>
 </html>
