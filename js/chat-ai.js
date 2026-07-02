@@ -24,7 +24,7 @@ No solo des respuestas, sino que acompannes al estudiante en su proceso de apren
 Bienvenido! Soy tu asesor educativo. Arriba puedes seleccionar el motor de IA que prefieras:
 - **Gemini Nano**  (recomendado) — IA integrada en Chrome, sin descargas.
 - **WebLLM**  — modelo Llama 3.2 de ~700MB via WebGPU.
-- **Transformers.js**  — modelos via Hugging Face (WebGPU o CPU).
+- **Transformers.js**  — modelo TinyLlama 1.1B via Hugging Face (WebGPU o CPU).
 - **Sin IA** — solo respuestas predefinidas.
 
 Elige el que mas te guste y empieza a preguntar!
@@ -36,7 +36,7 @@ Elige el que mas te guste y empieza a preguntar!
  **WebLLM listo!** El modelo Llama 3.2 se ha cargado en tu navegador. Todo funciona localmente, sin enviar datos a internet. 
 `,
   readyTransformers: `
- **Transformers.js listo!** Modelo Qwen2-0.5B cargado via Hugging Face. Funciona con WebGPU o CPU. 
+ **Transformers.js listo!** Modelo TinyLlama 1.1B cargado via Hugging Face. Funciona con WebGPU o CPU. 
 `
 };
 
@@ -205,8 +205,8 @@ const backends = {
       dispatch('downloading', 'Cargando Transformers.js...');
       try {
         const { pipeline } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers');
-        dispatch('downloading', 'Descargando modelo Qwen2-0.5B (~500MB la primera vez)...');
-        this._pipeline = await pipeline('text-generation', 'Xenova/Qwen2-0.5B-Instruct', {
+        dispatch('downloading', 'Descargando modelo TinyLlama 1.1B (~700MB la primera vez)...');
+        this._pipeline = await pipeline('text-generation', 'Xenova/TinyLlama-1.1B-Chat-v1.0', {
           dtype: 'q4',
           progress_callback: (p) => {
             if (p.status === 'progress') {
