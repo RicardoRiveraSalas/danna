@@ -275,9 +275,9 @@ async function init() {
   const saved = localStorage.getItem('danna_ai_backend');
   let initial = saved && available[saved] ? saved : null;
   if (!initial) {
-    if (available.gemini) initial = 'gemini';
+    if (available.transformers) initial = 'transformers';
+    else if (available.gemini) initial = 'gemini';
     else if (available.webllm) initial = 'webllm';
-    else if (available.transformers) initial = 'transformers';
     else initial = 'off';
   }
 
