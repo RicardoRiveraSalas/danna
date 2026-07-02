@@ -2,32 +2,57 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Lumi - Juego de pintar cuadros por números. Elige colores y completa el dibujo.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="description" content="Lumi Vuelo - Juego de esquivar obstáculos volando con Danna">
 <meta name="theme-color" content="#302b63">
-<title>Lumi · Pintar Cuadros</title>
+<title>Lumi · Vuelo</title>
 <link rel="stylesheet" href="css/juego.css">
 </head>
 <body>
 <div class="app-container">
   <div class="header">
-    <div class="logo-wrap">
-      <img src="fotos/danna.png" alt="Danna Rivera" class="avatar-mini">
-      <div class="logo">🎨 LUMI</div>
+    <div class="logo-badge">
+      <img src="fotos/danna.png" alt="Danna Rivera" class="avatar-mini" id="avatarMini">
+      <div class="logo">🧹 LUMI VUELO</div>
     </div>
-    <p class="subtitle">Pintar Cuadros</p>
+    <p class="subtitle">Esquiva obstáculos volando</p>
   </div>
 
-  <div class="card">
-    <div class="level-bar" id="levelBar"></div>
-
-    <div class="canvas-wrap">
-      <div class="canvas" id="canvas"></div>
+  <div id="gameContainer">
+    <div id="hud">
+      <div class="hud-item">⭐ <span id="score">0</span></div>
+      <div class="hud-divider"></div>
+      <div class="hud-item">🏆 <span id="highScore">0</span></div>
     </div>
 
-    <div class="palette" id="palette"></div>
+    <div id="gameArea">
+      <canvas id="gameCanvas"></canvas>
+    </div>
 
-    <p class="status" id="status">Selecciona un color y pinta las zonas</p>
+    <div id="overlay">
+      <div id="startScreen">
+        <div class="overlay-card">
+          <div class="witch-preview">
+            <img src="fotos/danna.png" alt="Danna" class="preview-img">
+            <div class="preview-broom"></div>
+          </div>
+          <h2>🧹 ¡A volar!</h2>
+          <p>Usa las <strong>flechas</strong> del teclado<br>para esquivar los obstáculos</p>
+          <p class="controls-hint">⬆️ ⬇️ ⬅️ ➡️</p>
+          <button id="startBtn">Comenzar</button>
+        </div>
+      </div>
+      <div id="gameOverScreen" style="display:none">
+        <div class="overlay-card">
+          <div class="crash-icon">💥</div>
+          <h2>¡Chocaste!</h2>
+          <p class="final-score-label">Puntuación</p>
+          <p class="final-score" id="finalScore">0</p>
+          <p class="best-label">Mejor: <span id="finalBest">0</span></p>
+          <button id="restartBtn">Reintentar</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
