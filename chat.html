@@ -1,79 +1,284 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Chat con Gemini</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 10px; }
-        #chatbox { height: 300px; border: 1px solid #ccc; overflow-y: scroll; padding: 10px; margin-bottom: 10px; }
-        #user-input { width: 80%; padding: 8px; }
-        #send-btn { width: 15%; padding: 8px; }
-        .nav-buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-        .ruta-btn{background:linear-gradient(135deg,#ff69b4,#00bfff);color:#fff;text-decoration:none;padding:10px 20px;border-radius:25px;font-weight:600;font-size:.85em;cursor:pointer;transition:all .3s ease;box-shadow:0 4px 15px rgba(255,69,180,.3);display:flex;align-items:center;gap:6px;border:none}
-        .ruta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,69,180,.5)}
-        @media(max-width:600px){.ruta-btn{padding:8px 14px;font-size:.8em}}
-        footer{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-top:1px solid rgba(255,255,255,.1);padding:20px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:20px}
-        .footer-name{font-weight:600;font-size:.9em;opacity:.8}
-        @media(max-width:600px){footer{padding:15px 20px;flex-direction:column;text-align:center}}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat IA - Danna</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+  min-height:100vh;
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  color:#fff;
+  display:flex;
+  flex-direction:column
+}
+.app-container{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  max-width:700px;
+  width:100%;
+  margin:0 auto;
+  padding:20px
+}
+.header{
+  text-align:center;
+  margin-bottom:20px
+}
+.header-title{
+  font-size:1.8em;
+  font-weight:900;
+  background:linear-gradient(135deg,#ff69b4,#00bfff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  letter-spacing:2px
+}
+.header-sub{
+  font-size:.9em;
+  opacity:.6;
+  margin-top:4px
+}
+.card{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  background:rgba(255,255,255,.05);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 8px 32px 0 rgba(31,38,135,.37);
+  min-height:400px
+}
+.messages{
+  flex:1;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:10px 0;
+  scroll-behavior:smooth
+}
+.messages::-webkit-scrollbar{width:4px}
+.messages::-webkit-scrollbar-track{background:transparent}
+.messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
+.msg{
+  display:flex;
+  gap:10px;
+  max-width:85%;
+  animation:fadeIn .25s ease
+}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg.bot{align-self:flex-start}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.msg-avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.85em
+}
+.msg.user .msg-avatar{background:linear-gradient(135deg,#ff69b4,#00bfff)}
+.msg.bot .msg-avatar{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)}
+.msg-bubble{
+  padding:10px 14px;border-radius:16px;line-height:1.5;font-size:.95em;
+  word-wrap:break-word;white-space:pre-wrap
+}
+.msg.user .msg-bubble{
+  background:linear-gradient(135deg,rgba(255,69,180,.3),rgba(0,191,255,.3));
+  border:1px solid rgba(255,69,180,.3);border-bottom-right-radius:4px
+}
+.msg.bot .msg-bubble{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-bottom-left-radius:4px
+}
+.msg.bot .msg-bubble strong{color:#ffb3d9}
+.msg.bot .msg-bubble code{
+  background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;
+  font-size:.9em;font-family:Consolas,monospace
+}
+.typing{
+  display:flex;gap:5px;padding:10px 14px;align-items:center
+}
+.typing span{
+  width:7px;height:7px;background:rgba(255,255,255,.4);border-radius:50%;
+  animation:typing 1.4s infinite
+}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes typing{
+  0%,60%,100%{transform:translateY(0);opacity:.4}
+  30%{transform:translateY(-6px);opacity:1}
+}
+.input-area{
+  display:flex;gap:8px;padding-top:15px;border-top:1px solid rgba(255,255,255,.1)
+}
+.input-area input{
+  flex:1;padding:12px 16px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.15);border-radius:12px;color:#fff;
+  font-size:.95em;font-family:inherit;outline:none;transition:border .3s
+}
+.input-area input:focus{border-color:#ff69b4}
+.input-area input::placeholder{color:rgba(255,255,255,.3)}
+.send-btn{
+  background:linear-gradient(135deg,#ff69b4,#00bfff);border:none;color:#fff;
+  width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.1em;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .3s;flex-shrink:0
+}
+.send-btn:hover{transform:scale(1.1);box-shadow:0 5px 20px rgba(255,69,180,.4)}
+.send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.welcome{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;gap:12px;padding:20px
+}
+.welcome-icon{font-size:3.5em}
+.welcome-title{
+  font-size:1.4em;font-weight:700;
+  background:linear-gradient(135deg,#ff69b4,#00bfff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+}
+.welcome-text{opacity:.7;max-width:380px;line-height:1.6;font-size:.95em}
+.nav-buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.ruta-btn{
+  background:linear-gradient(135deg,#ff69b4,#00bfff);color:#fff;
+  text-decoration:none;padding:10px 20px;border-radius:25px;
+  font-weight:600;font-size:.85em;cursor:pointer;transition:all .3s ease;
+  box-shadow:0 4px 15px rgba(255,69,180,.3);display:flex;
+  align-items:center;gap:6px;border:none
+}
+.ruta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,69,180,.5)}
+@media(max-width:600px){.ruta-btn{padding:8px 14px;font-size:.8em}}
+footer{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  border-top:1px solid rgba(255,255,255,.1);
+  padding:20px 40px;display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:10px
+}
+.footer-name{font-weight:600;font-size:.9em;opacity:.8}
+@media(max-width:600px){footer{padding:15px 20px;flex-direction:column;text-align:center}}
+@media(max-width:600px){
+  .app-container{padding:15px}
+  .card{padding:15px;border-radius:16px}
+  .msg{max-width:90%}
+  .header-title{font-size:1.4em}
+}
+</style>
 </head>
 <body>
 
-    <h2>Mi Chatbot IA</h2>
-    <div id="chatbox"></div>
-    <input type="text" id="user-input" placeholder="Escribe un mensaje...">
-    <button id="send-btn">Enviar</button>
+<div class="app-container">
+  <div class="header">
+    <div class="header-title">🤖 Chat IA</div>
+    <div class="header-sub">Con Gemini</div>
+  </div>
 
-    <!-- Importar el SDK de Google Gen AI para la web -->
-    <script type="importmap">
-      {
-        "imports": {
-          "@google/genai": "https://esm.run/@google/genai"
-        }
-      }
-    </script>
-
-    <script type="module">
-        import { GoogleGenAI } from '@google/genai';
-
-        // La API key se inyecta desde GitHub Secrets en el build
-        const API_KEY = "GEMINI_API_KEY_PLACEHOLDER"; 
-        const ai = new GoogleGenAI({ apiKey: API_KEY });
-
-        const chatbox = document.getElementById('chatbox');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-
-        sendBtn.addEventListener('click', async () => {
-            const message = userInput.value.trim();
-            if (!message) return;
-
-            // Mostrar mensaje del usuario
-            chatbox.innerHTML += `<p><strong>Tú:</strong> ${message}</p>`;
-            userInput.value = '';
-
-            try {
-                // Llamar al modelo Gemini 2.5 Flash (ideal para texto rápido)
-                const response = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
-                    contents: message,
-                });
-
-                // Mostrar respuesta de la IA
-                chatbox.innerHTML += `<p><strong>IA:</strong> ${response.text}</p>`;
-                chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll al final
-            } catch (error) {
-                console.error(error);
-                chatbox.innerHTML += `<p style="color:red;"><strong>Error:</strong> No se pudo obtener respuesta.</p>`;
-            }
-        });
-    </script>
-    <footer>
-      <span class="footer-name">Danna Rivera</span>
-      <div class="nav-buttons">
-        <a href="index.html" class="ruta-btn">🏠 Inicio</a>
-        <a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
+  <div class="card">
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">💬</div>
+        <div class="welcome-title">Pregunta lo que quieras</div>
+        <div class="welcome-text">Puedes consultar sobre carreras, estudios, dudas generales o lo que necesites.</div>
       </div>
-    </footer>
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Escribe tu mensaje..." autofocus>
+      <button class="send-btn" id="sendBtn">➤</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-name">Danna Rivera</span>
+  <div class="nav-buttons">
+    <a href="index.html" class="ruta-btn">🏠 Inicio</a>
+    <a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
+  </div>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.run/@google/genai"
+  }
+}
+</script>
+
+<script type="module">
+import { GoogleGenAI } from '@google/genai';
+
+const API_KEY = "GEMINI_API_KEY_PLACEHOLDER";
+const ai = new GoogleGenAI({ apiKey: API_KEY });
+
+const messages = document.getElementById('messages');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const welcome = document.getElementById('welcome');
+
+function addMessage(text, role) {
+  welcome?.remove();
+  const msg = document.createElement('div');
+  msg.className = 'msg ' + role;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.textContent = role === 'user' ? '👤' : '🤖';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.textContent = text;
+
+  msg.appendChild(avatar);
+  msg.appendChild(bubble);
+  messages.appendChild(msg);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function setLoading(loading) {
+  sendBtn.disabled = loading;
+  sendBtn.textContent = loading ? '…' : '➤';
+
+  const existing = messages.querySelector('.typing');
+  if (existing) existing.remove();
+
+  if (loading) {
+    const div = document.createElement('div');
+    div.className = 'msg bot';
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble typing';
+    bubble.innerHTML = '<span></span><span></span><span></span>';
+    div.appendChild(bubble);
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+}
+
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text) return;
+
+  userInput.value = '';
+  addMessage(text, 'user');
+  setLoading(true);
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: text,
+    });
+    addMessage(response.text || 'Sin respuesta.', 'bot');
+  } catch (e) {
+    addMessage('Error al conectar: ' + e.message, 'bot');
+  } finally {
+    setLoading(false);
+  }
+}
+
+sendBtn.addEventListener('click', sendMessage);
+userInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+</script>
 </body>
 </html>
