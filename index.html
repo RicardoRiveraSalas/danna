@@ -68,17 +68,11 @@ body{
   pointer-events:none
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.nav-buttons{
+.ruta-btn{
   position:fixed;
   top:20px;
   right:20px;
   z-index:500;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:flex-end
-}
-.ruta-btn{
   background:linear-gradient(135deg,#ff69b4,#00bfff);
   color:#fff;
   text-decoration:none;
@@ -99,14 +93,11 @@ body{
   box-shadow:0 8px 25px rgba(255,69,180,.5)
 }
 @media(max-width:600px){
-  .nav-buttons{
+  .ruta-btn{
     top:10px;
     right:10px;
-    gap:6px
-  }
-  .ruta-btn{
     padding:8px 14px;
-    font-size:.8em
+    font-size:.85em
   }
 }
 footer{
@@ -140,10 +131,7 @@ footer{
 </style>
 </head>
 <body>
-<div class="nav-buttons">
-  <a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
-  <a href="chat.html" class="ruta-btn">🤖 Chat IA</a>
-</div>
+<a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
 <div class="container" id="gallery"></div>
 <div class="modal-overlay" id="modal">
   <img class="modal-img" id="modalImg" src="" alt="modal">
