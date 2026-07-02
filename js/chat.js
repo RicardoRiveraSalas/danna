@@ -152,6 +152,10 @@ window.addEventListener('ai-status', (e) => {
     progressBar.style.display = 'none';
     updateBadge('off', '');
     addMessage(message || 'Error al cargar la IA. Usare respuestas predefinidas.', 'bot');
+    // Auto-cambiar selector a 'off' cuando falla un backend
+    if (aiBackend && aiBackend.value !== 'off') {
+      aiBackend.value = 'off';
+    }
   }
 });
 
