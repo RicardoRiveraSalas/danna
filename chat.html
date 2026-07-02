@@ -16,16 +16,28 @@
   </div>
 
   <div class="card">
+    <div class="model-status" id="modelStatus">
+      <span id="modelStatusIcon">🔍</span>
+      <span id="modelStatusText">Verificando IA local disponible...</span>
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="download-actions" id="downloadActions">
+        <button class="btn-download-yes" id="btnDownloadYes">🧠 Activar IA local</button>
+        <button class="btn-download-no" id="btnDownloadNo">Modo básico</button>
+      </div>
+    </div>
     <div class="messages" id="messages">
       <div class="welcome" id="welcome">
         <img src="fotos/danna.png" alt="Danna Rivera" class="welcome-avatar-chat">
-        <div class="welcome-title">Pregunta lo que quieras</div>
-        <div class="welcome-text">Puedes consultar sobre carreras, estudios, dudas generales o lo que necesites.</div>
+        <div class="welcome-title">¡Bienvenido!</div>
+        <div class="welcome-text">Soy tu asistente educativo. Pregúntame sobre carreras, estudios, tareas u orientación vocacional. También puedes activar la IA local para respuestas más inteligentes y personalizadas.</div>
       </div>
     </div>
 
     <div class="input-area">
-      <input type="text" id="userInput" placeholder="Escribe tu mensaje..." autofocus>
+      <textarea id="userInput" placeholder="Escribe tu mensaje..." rows="1" autofocus></textarea>
+      <button class="clear-btn" id="clearBtn" title="Borrar conversación">🗑️</button>
       <button class="send-btn" id="sendBtn">➤</button>
     </div>
   </div>
@@ -45,6 +57,8 @@
   <span class="footer-year">© 2026</span>
 </footer>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.0/dist/transformers.min.js"></script>
+<script src="js/chat-ai.js"></script>
 <script src="js/chat.js"></script>
 </body>
 </html>

@@ -1,6 +1,10 @@
 :root {
   --primary-gradient: linear-gradient(135deg, #ff69b4, #00bfff);
   --bg-dark: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --accent: #ff69b4;
+  --secondary: #00bfff;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -31,15 +35,18 @@ body{
   to{opacity:1;transform:translateY(0)}
 }
 .logo-badge{
-  display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:4px
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin-bottom:4px
 }
 .avatar-mini{
   width:40px;height:40px;border-radius:50%;object-fit:cover;
   border:2px solid;border-color:#ff69b4 #00bfff #ff69b4 #00bfff;
-  box-shadow:0 0 16px rgba(255,105,180,.2);flex-shrink:0
+  box-shadow:0 0 16px rgba(255,105,180,.2);
+  flex-shrink:0
 }
 .logo{
-  font-size:clamp(1.4rem,4vw,2em);font-weight:900;
+  font-size:clamp(1.4rem,4vw,2em);
+  font-weight:900;
   background:var(--primary-gradient);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   letter-spacing:2px
@@ -47,51 +54,61 @@ body{
 .subtitle{font-size:.95em;opacity:.7;font-weight:300}
 
 #gameContainer{
-  width:100%;max-width:520px;
-  flex:1;display:flex;flex-direction:column;gap:8px;padding-bottom:12px
+  width:100%;max-width:720px;
+  flex:1;display:flex;flex-direction:column;
+  gap:8px;padding-bottom:12px
 }
 
 #hud{
-  display:flex;align-items:center;justify-content:center;gap:14px;
-  padding:10px 16px;
-  background:rgba(255,255,255,.06);border-radius:14px;
-  border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  padding:10px 20px;
+  background:rgba(255,255,255,.06);
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(6px);
   animation:slideInUp .5s ease
 }
 @keyframes slideInUp{
   from{opacity:0;transform:translateY(16px)}
   to{opacity:1;transform:translateY(0)}
 }
-.hud-item{font-size:.95em;font-weight:600;letter-spacing:.3px}
+.hud-item{font-size:1.1em;font-weight:600;letter-spacing:.3px}
 .hud-item span{font-variant-numeric:tabular-nums}
-.hud-divider{width:1px;height:22px;background:rgba(255,255,255,.15)}
+.hud-divider{width:1px;height:24px;background:rgba(255,255,255,.15)}
 
 #gameArea{
   position:relative;
-  flex:1;min-height:400px;
-  border-radius:14px;
+  flex:1;min-height:380px;
+  border-radius:18px;
   overflow:hidden;
   border:1px solid rgba(255,255,255,.06);
   box-shadow:0 8px 32px rgba(0,0,0,.3);
-  cursor:pointer;touch-action:none
+  cursor:pointer;
+  touch-action:none
 }
-#gameCanvas{display:block;width:100%;height:100%}
+#gameCanvas{
+  display:block;
+  width:100%;height:100%
+}
 
 #overlay{
   position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
   z-index:50;
-  background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
-  border-radius:14px;animation:fadeIn .3s ease
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(4px);
+  border-radius:18px;
+  animation:fadeIn .3s ease
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 .overlay-card{
   background:rgba(20,20,50,.92);
   border:1px solid rgba(255,255,255,.12);
-  border-radius:20px;padding:28px 36px;
+  border-radius:20px;
+  padding:32px 40px;
   text-align:center;
-  max-width:300px;width:90%;
+  max-width:320px;width:90%;
   box-shadow:0 20px 60px rgba(0,0,0,.5);
   animation:cardPop .4s ease
 }
@@ -100,17 +117,18 @@ body{
   100%{transform:scale(1);opacity:1}
 }
 .overlay-card h2{
-  font-size:1.5em;margin-bottom:6px;
+  font-size:1.5em;margin-bottom:8px;
   background:var(--primary-gradient);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
 }
-.overlay-card p{font-size:.9em;opacity:.7;margin-bottom:4px;line-height:1.5}
-.controls-hint{font-size:.85em;opacity:.6;margin:6px 0 14px!important}
+.overlay-card p{font-size:.9em;opacity:.7;margin-bottom:6px;line-height:1.5}
+.controls-hint{font-size:1.3em;opacity:.6;margin:6px 0 14px!important}
 
 .overlay-card button{
-  background:var(--primary-gradient);color:#fff;border:none;
+  background:var(--primary-gradient);
+  color:#fff;border:none;
   padding:12px 36px;border-radius:30px;
-  font-size:1em;font-weight:700;
+  font-size:1.05em;font-weight:700;
   cursor:pointer;transition:all .25s ease;
   box-shadow:0 4px 20px rgba(255,69,180,.35);
   margin-top:8px;font-family:inherit
@@ -120,7 +138,32 @@ body{
   box-shadow:0 8px 30px rgba(255,69,180,.5)
 }
 
-.car-preview{font-size:3.5em;margin-bottom:4px}
+.witch-preview{
+  position:relative;display:inline-block;margin-bottom:12px
+}
+.preview-img{
+  width:64px;height:64px;border-radius:50%;
+  object-fit:cover;display:block;margin:0 auto;
+  border:2px solid;border-color:#ff69b4 #00bfff #ff69b4 #00bfff;
+  animation:previewFloat 2s ease-in-out infinite
+}
+@keyframes previewFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+.preview-broom{
+  position:absolute;bottom:-2px;left:34px;
+  width:60px;height:4px;
+  background:linear-gradient(90deg,#8B6914,#C8A84E 40%,#8B6914);
+  border-radius:2px;transform:rotate(-8deg)
+}
+.preview-broom::after{
+  content:'';position:absolute;right:-5px;top:-3px;
+  width:11px;height:10px;
+  background:radial-gradient(ellipse,#d4a030,#8B6914);
+  border-radius:50%
+}
+
 .crash-icon{font-size:3em;margin-bottom:6px}
 .final-score-label{font-size:.8em;opacity:.5;text-transform:uppercase;letter-spacing:1px}
 .final-score{
@@ -136,9 +179,10 @@ footer{
   background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
   backdrop-filter:blur(10px);
   border-top:1px solid rgba(255,255,255,.1);
-  padding:14px 20px;
+  padding:16px 24px;
   display:flex;justify-content:space-between;align-items:center;
-  flex-wrap:wrap;gap:8px;font-size:.85em
+  flex-wrap:wrap;gap:10px;
+  font-size:.85em
 }
 .footer-name{font-weight:600;opacity:.8}
 .footer-details{font-size:.85em;opacity:.6}
@@ -150,7 +194,7 @@ footer{
 .nav-buttons{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .ruta-btn{
   background:linear-gradient(135deg,#ff69b4,#00bfff);color:#fff;
-  text-decoration:none;padding:7px 14px;border-radius:25px;
+  text-decoration:none;padding:8px 16px;border-radius:25px;
   font-weight:600;font-size:.8em;cursor:pointer;transition:all .3s ease;
   box-shadow:0 4px 15px rgba(255,69,180,.3);display:flex;
   align-items:center;gap:5px;border:none
@@ -158,21 +202,21 @@ footer{
 .ruta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,69,180,.5)}
 .theme-select{
   background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.2);border-radius:6px;
-  color:#fff;padding:4px 8px;font-family:inherit;
-  font-size:.8em;cursor:pointer;outline:none
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:6px;color:#fff;padding:4px 8px;
+  font-family:inherit;font-size:.8em;cursor:pointer;outline:none
 }
 .theme-select option{background:#1a1a2e;color:#fff}
 
 @media(max-width:600px){
   .app-container{padding:12px 12px 0;gap:10px}
-  #gameArea{min-height:320px}
-  #hud{padding:8px 12px;gap:10px;font-size:.85em}
-  .overlay-card{padding:22px 24px}
+  #gameArea{min-height:300px;border-radius:14px}
+  #hud{padding:8px 14px;gap:10px;font-size:.9em}
+  .overlay-card{padding:24px 28px}
   .overlay-card h2{font-size:1.3em}
   .final-score{font-size:2.2em}
-  footer{padding:10px 14px;flex-direction:column;text-align:center;gap:6px}
-  .ruta-btn{padding:5px 10px;font-size:.75em}
+  footer{padding:12px 16px;flex-direction:column;text-align:center;gap:6px}
+  .ruta-btn{padding:6px 12px;font-size:.75em}
   .footer-year{font-size:1em}
 }
 
@@ -215,6 +259,11 @@ footer{
 [data-theme="retro"] .final-score{
   background:none;-webkit-text-fill-color:#000080;color:#000080
 }
+[data-theme="retro"] .preview-img{
+  border-radius:0;border:2px solid #000080;box-shadow:none
+}
+[data-theme="retro"] .preview-broom{background:#8B6914}
+[data-theme="retro"] .preview-broom::after{background:#8B6914}
 [data-theme="retro"] footer{
   background:#c0c0c0;
   border-top:2px solid;border-color:#fff #808080
@@ -226,7 +275,7 @@ footer{
 }
 [data-theme="retro"] .ruta-btn{
   background:#c0c0c0;border:2px outset #ccc;border-radius:0;color:#000;
-  box-shadow:none;font-weight:400;font-family:inherit;padding:3px 6px
+  box-shadow:none;font-weight:400;font-family:inherit;padding:3px 8px
 }
 [data-theme="retro"] .ruta-btn:hover{transform:none;box-shadow:none}
 [data-theme="retro"] .theme-select{

@@ -3,28 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="description" content="Lumi Pit - Juego de carreras estilo Gran Pit">
+<meta name="description" content="Lumi Vuelo - Juego de esquivar obstáculos volando con Danna">
 <meta name="theme-color" content="#302b63">
-<title>Lumi · Pit</title>
+<title>Lumi · Vuelo</title>
 <link rel="stylesheet" href="css/juego.css">
 </head>
 <body>
 <div class="app-container">
   <div class="header">
     <div class="logo-badge">
-      <img src="fotos/danna.png" alt="Danna Rivera" class="avatar-mini">
-      <div class="logo">🏁 LUMI PIT</div>
+      <img src="fotos/danna.png" alt="Danna Rivera" class="avatar-mini" id="avatarMini">
+      <div class="logo">🧹 LUMI VUELO</div>
     </div>
-    <p class="subtitle">Carrera de autos</p>
+    <p class="subtitle">Esquiva obstáculos volando</p>
   </div>
 
   <div id="gameContainer">
     <div id="hud">
-      <div class="hud-item">📏 <span id="dist">0</span>m</div>
+      <div class="hud-item">⭐ <span id="score">0</span></div>
       <div class="hud-divider"></div>
-      <div class="hud-item">🏆 <span id="highScore">0</span>m</div>
-      <div class="hud-divider"></div>
-      <div class="hud-item">💨 <span id="speed">0</span>km/h</div>
+      <div class="hud-item">🏆 <span id="highScore">0</span></div>
     </div>
 
     <div id="gameArea">
@@ -34,10 +32,13 @@
     <div id="overlay">
       <div id="startScreen">
         <div class="overlay-card">
-          <div class="car-preview">🏎️</div>
-          <h2>🏁 ¡A correr!</h2>
-          <p>Esquivá los autos con<br>las <strong>flechas</strong> ← →</p>
-          <p class="controls-hint">Velocidad aumenta con el tiempo</p>
+          <div class="witch-preview">
+            <img src="fotos/danna.png" alt="Danna" class="preview-img">
+            <div class="preview-broom"></div>
+          </div>
+          <h2>🧹 ¡A volar!</h2>
+          <p>Usa las <strong>flechas</strong> del teclado<br>para esquivar los obstáculos</p>
+          <p class="controls-hint">⬆️ ⬇️ ⬅️ ➡️</p>
           <button id="startBtn">Comenzar</button>
         </div>
       </div>
@@ -45,9 +46,9 @@
         <div class="overlay-card">
           <div class="crash-icon">💥</div>
           <h2>¡Chocaste!</h2>
-          <p class="final-score-label">Distancia</p>
-          <p class="final-score" id="finalScore">0 <span style="font-size:.4em">m</span></p>
-          <p class="best-label">Mejor: <span id="finalBest">0</span>m</p>
+          <p class="final-score-label">Puntuación</p>
+          <p class="final-score" id="finalScore">0</p>
+          <p class="best-label">Mejor: <span id="finalBest">0</span></p>
           <button id="restartBtn">Reintentar</button>
         </div>
       </div>
