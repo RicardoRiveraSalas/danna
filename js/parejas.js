@@ -1,14 +1,3 @@
-function setTheme(t){
-  document.documentElement.dataset.theme=t==='retro'?'retro':'';
-  localStorage.setItem('theme',t)
-}
-(function(){
-  const t=localStorage.getItem('theme')||'modern';
-  document.documentElement.dataset.theme=t==='retro'?'retro':'';
-  const sel=document.getElementById('themeSelect');
-  if(sel)sel.value=t;
-})();
-
 const IMGS=[
   'fotos/img1.webp','fotos/img2.webp','fotos/img3.webp','fotos/img4.png',
   'fotos/img5.jpg','fotos/img6.png','fotos/img7.png','fotos/img8.png',
@@ -42,14 +31,6 @@ let matched=0;
 let moves=0;
 let locked=false;
 let gameRunning=false;
-
-function shuffle(a){
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
 
 function buildCards(){
   const n=Math.min(numPairs,IMGS.length);

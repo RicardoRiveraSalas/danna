@@ -72,17 +72,20 @@
     <span class="footer-name">Danna Rivera</span>
     <span class="footer-details">Estudiante de Diseño · CEDES Don Bosco Costa Rica</span>
     <div class="nav-buttons">
-      <a href="index.html" class="ruta-btn">🏠 Inicio</a>
-      <a href="chat.html" class="ruta-btn">🤖 Chat IA</a>
-      <a href="juego.html" class="ruta-btn">🧹 Vuelo</a>
-      <a href="parejas.html" class="ruta-btn">🃏 Parejas</a>
+      <a href="index.html" class="ruta-btn" aria-label="Inicio">🏠 Inicio</a>
+      <a href="ruta-vocacional.html" class="ruta-btn" aria-label="Ruta Vocacional">🌱 Ruta Vocacional</a>
+      <a href="chat.html" class="ruta-btn" aria-label="Chat IA">🤖 Chat IA</a>
+      <a href="juego.html" class="ruta-btn" aria-label="Juego Vuelo">🧹 Vuelo</a>
+      <a href="parejas.html" class="ruta-btn" aria-label="Juego Parejas">🃏 Parejas</a>
     </div>
-    <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)">
+    <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)" aria-label="Tema visual">
       <option value="modern">Moderno</option>
       <option value="retro">Win 3.1</option>
     </select>
     <span class="footer-year">© 2026</span>
   </footer>
-  <script src="js/ruta-vocacional.js"></script>
+  <script src="js/theme.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/ruta-vocacional.js"></script>
 </body>
 </html>

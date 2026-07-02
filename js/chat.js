@@ -1,14 +1,3 @@
-function setTheme(t){
-  document.documentElement.dataset.theme=t==='retro'?'retro':'';
-  localStorage.setItem('theme',t)
-}
-(function(){
-  const t=localStorage.getItem('theme')||'modern';
-  document.documentElement.dataset.theme=t==='retro'?'retro':'';
-  const sel=document.getElementById('themeSelect');
-  if(sel)sel.value=t;
-})();
-
 const STORAGE_KEY = 'danna_chat_history';
 
 const messagesEl = document.getElementById('messages');
@@ -226,8 +215,12 @@ async function sendMessage() {
 
   let reply;
   if (aiEnabled) {
-    const ctx = conversationHistory.slice(-8, -1);
-    reply = await window.__aiGenerateResponse?.(text, ctx);
+    try {
+      const ctx = conversationHistory.slice(-8, -1);
+      reply = await window.__aiGenerateResponse?.(text, ctx);
+    } catch (e) {
+      console.error('AI gen error:', e);
+    }
   }
   if (!reply) {
     await new Promise(r => setTimeout(r, 300 + Math.random() * 300));
@@ -254,4 +247,12 @@ sendBtn.addEventListener('click', sendMessage);
 const hasHistory = loadHistory();
 if (hasHistory) {
   aiWelcomeShown = true;
+}
+
+// Handle race: AI status may have been dispatched before listener was attached
+const currStatus = window.__aiModelStatus;
+if (currStatus === 'ready' || currStatus === 'error') {
+  window.dispatchEvent(new CustomEvent('ai-model-status', {
+    detail: { status: currStatus, progress: window.__aiModelProgress || 0, message: window.__aiModelMessage || '' }
+  }));
 }

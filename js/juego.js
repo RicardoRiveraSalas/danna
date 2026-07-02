@@ -1,12 +1,3 @@
-function setTheme(t){
-  document.documentElement.dataset.theme=t==='retro'?'retro':'';
-  localStorage.setItem('theme',t)
-}
-(function(){
-  const t=localStorage.getItem('theme')||'modern';
-  document.documentElement.dataset.theme=t==='retro'?'retro':'';
-})();
-
 const canvas=document.getElementById('gameCanvas');
 const ctx=canvas.getContext('2d');
 const gameArea=document.getElementById('gameArea');
@@ -32,18 +23,16 @@ let px,py,tx,ty;
 let obstacles=[],particles=[],stars=[];
 let difficulty=1,lastSpawn=0,lastTime=0,shakeTimer=0,shakeInt=0,frameState='idle',bobPhase=0;
 
-function resize(){
-  const rect=gameArea.getBoundingClientRect();
-  canvas.width=rect.width;
-  canvas.height=rect.height;
-  W=rect.width;
-  H=rect.height;
-  if(!running&&!gameOver){px=70;py=H/2;tx=px;ty=py}
+function resize() {
+  const rect = gameArea.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  W = rect.width;
+  H = rect.height;
+  if (!running && !gameOver) { px = 70; py = H / 2; tx = px; ty = py }
 }
-function rand(min,max){return Math.random()*(max-min)+min}
-function lerp(a,b,t){return a+(b-a)*t}
-function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
 
+const onResize = debounce(resize, 100);
 function spawnObstacle(){
   const w=28+rand(0,24),h=28+rand(0,32);
   obstacles.push({
@@ -363,7 +352,7 @@ gameArea.addEventListener('touchmove',e=>{
   tx=clamp(t.clientX-r.left-R,10,W-60);ty=clamp(t.clientY-r.top-R,10,H-60);
 },{passive:false});
 
-window.addEventListener('resize',resize);
+window.addEventListener('resize',onResize);
 resize();
 resetGame();
 

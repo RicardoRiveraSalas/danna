@@ -1,13 +1,3 @@
-function setTheme(t){
-  document.documentElement.dataset.theme=t==='retro'?'retro':'';
-  localStorage.setItem('theme',t)
-}
-(function(){
-  const t=localStorage.getItem('theme')||'modern';
-  document.documentElement.dataset.theme=t==='retro'?'retro':'';
-  const sel=document.getElementById('themeSelect');
-  if(sel)sel.value=t;
-})();
 const images=[
   'fotos/img1.webp','fotos/img2.webp','fotos/img3.webp','fotos/img4.png',
   'fotos/img5.jpg','fotos/img6.png','fotos/img7.png','fotos/img8.png',
@@ -24,6 +14,8 @@ images.forEach((src,i)=>{
   const div=document.createElement('div');
   div.className='seed';
   div.dataset.index=i;
+  div.setAttribute('role','button');
+  div.setAttribute('tabindex','0');
   const x=Math.random()*90;
   const y=Math.random()*85;
   const size=60+Math.random()*50;
@@ -73,10 +65,18 @@ function nextPhoto(){
   modalCounter.textContent=(currentIndex+1)+' / '+images.length;
 }
 
-container.addEventListener('click',e=>{
-  const seed=e.target.closest('.seed');
-  if(!seed)return;
+function onSeedClick(e) {
+  const seed = e.target.closest('.seed');
+  if (!seed) return;
   openModal(parseInt(seed.dataset.index));
+}
+
+container.addEventListener('click', onSeedClick);
+container.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    const seed = e.target.closest('.seed');
+    if (seed) { e.preventDefault(); openModal(parseInt(seed.dataset.index)) }
+  }
 });
 
 modal.addEventListener('click',e=>{
