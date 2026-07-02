@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="description" content="Lumi Parejas - Juego de memoria encontrando pares de imágenes">
+<meta name="theme-color" content="#302b63">
+<title>Lumi · Parejas</title>
+<link rel="stylesheet" href="css/parejas.css">
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <div class="logo-badge">
+      <img src="fotos/danna.png" alt="Danna Rivera" class="avatar-mini">
+      <div class="logo">🃏 LUMI PAREJAS</div>
+    </div>
+    <p class="subtitle">Encuentra todos los pares</p>
+  </div>
+
+  <div id="gameContainer">
+    <div id="hud">
+      <div class="hud-item">🎯 <span id="level">1</span></div>
+      <div class="hud-divider"></div>
+      <div class="hud-item">⭐ <span id="pairs">0</span>/<span id="totalPairs">6</span></div>
+      <div class="hud-divider"></div>
+      <div class="hud-item">👆 <span id="moves">0</span></div>
+    </div>
+
+    <div id="board"></div>
+
+    <div id="overlay">
+      <div id="startScreen">
+        <div class="overlay-card">
+          <h2>🃏 Buscar Parejas</h2>
+          <p>Volteá las cartas y encontrá<br>todos los pares de imágenes</p>
+          <p class="controls-hint">Cada nivel tiene una imagen más</p>
+          <button id="startBtn">Comenzar</button>
+        </div>
+      </div>
+      <div id="winScreen" style="display:none">
+        <div class="overlay-card">
+          <div class="crash-icon">🎉</div>
+          <h2>¡Nivel <span id="winLevel">1</span> completo!</h2>
+          <p id="winStats">6 pares en 8 movimientos</p>
+          <button id="nextBtn">Siguiente nivel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-name">Danna Rivera</span>
+  <span class="footer-details">Estudiante de Diseño · CEDES Don Bosco Costa Rica</span>
+  <div class="nav-buttons">
+    <a href="index.html" class="ruta-btn">🏠 Inicio</a>
+    <a href="juego.html" class="ruta-btn">🧹 Vuelo</a>
+    <a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
+    <a href="chat.html" class="ruta-btn">🤖 Chat IA</a>
+  </div>
+  <select class="theme-select" id="themeSelect" onchange="setTheme(this.value)">
+    <option value="modern">Moderno</option>
+    <option value="retro">Win 3.1</option>
+  </select>
+  <span class="footer-year">© 2026</span>
+</footer>
+<script src="js/parejas.js"></script>
+</body>
+</html>
