@@ -64,21 +64,27 @@ const backends = {
     icon: '\u2728',
     async check() {
       try {
-        if (!window.ai || !window.ai.languageModel) return false;
-        const caps = await window.ai.languageModel.capabilities();
+        const ai = window.ai || window.chrome?.aiOriginTrial;
+        if (!ai || !ai.languageModel) return false;
+        const caps = await ai.languageModel.capabilities();
         return caps.available !== 'no';
       } catch { return false; }
     },
     async start() {
       try {
-        const caps = await window.ai.languageModel.capabilities();
+        const ai = window.ai || window.chrome?.aiOriginTrial;
+        if (!ai || !ai.languageModel) {
+          dispatch('error', 'Chrome no tiene la Prompt API. Activala en:\nchrome://flags/#prompt-api-for-gemini-nano\n\nO usa WebLLM.');
+          return;
+        }
+        const caps = await ai.languageModel.capabilities();
         if (!caps || caps.available === 'no') {
-          dispatch('error', 'Gemini Nano no esta disponible. Activalo en chrome://flags/#prompt-api-for-gemini-nano');
+          dispatch('error', 'Gemini Nano no esta disponible en este navegador.\n\nPara activarlo:\n1. Abre chrome://flags/#prompt-api-for-gemini-nano\n2. Selecciona "Enabled"\n3. Reinicia Chrome\n\nMientras, usa WebLLM o modo Sin IA.');
           return;
         }
         if (caps.available === 'after-download') {
-          dispatch('downloading', 'Descargando Gemini Nano por primera vez...');
-          const s = await window.ai.languageModel.create();
+          dispatch('downloading', 'Descargando Gemini Nano (modelo integrado de Chrome)...');
+          const s = await ai.languageModel.create();
           s.destroy();
         }
         dispatch('ready', 'gemini');
@@ -91,6 +97,8 @@ const backends = {
     get isLoading() { return false; },
     async generateReply(text, history) {
       try {
+        const ai = window.ai || window.chrome?.aiOriginTrial;
+        if (!ai || !ai.languageModel) return null;
         let prompt = '';
         if (history && history.length > 0) {
           for (const m of history.slice(-6)) {
@@ -98,7 +106,7 @@ const backends = {
           }
         }
         prompt += 'Usuario: ' + text + '\n\nAsistente: ';
-        const session = await window.ai.languageModel.create({
+        const session = await ai.languageModel.create({
           systemPrompt: PROMPTS.systemPersonality
         });
         const result = await session.prompt(prompt);
