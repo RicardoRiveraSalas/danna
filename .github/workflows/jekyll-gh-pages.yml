@@ -28,6 +28,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Inject API key
+        run: |
+          if [ -n "${{ secrets.GEMINI_API_KEY }}" ]; then
+            sed -i "s/GEMINI_API_KEY_PLACEHOLDER/${{ secrets.GEMINI_API_KEY }}/g" chat.html
+          fi
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Build with Jekyll

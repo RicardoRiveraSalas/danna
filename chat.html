@@ -29,8 +29,8 @@
     <script type="module">
         import { GoogleGenAI } from '@google/genai';
 
-        // 🛑 RECUERDA: No subas este archivo a GitHub con la clave expuesta.
-        const API_KEY = "TU_API_KEY_AQUÍ"; 
+        // La API key se inyecta desde GitHub Secrets en el build
+        const API_KEY = "GEMINI_API_KEY_PLACEHOLDER"; 
         const ai = new GoogleGenAI({ apiKey: API_KEY });
 
         const chatbox = document.getElementById('chatbox');
