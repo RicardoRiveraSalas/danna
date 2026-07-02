@@ -70,31 +70,43 @@ const backends = {
       } catch { return false; }
     },
     async start() {
-      const caps = await window.ai.languageModel.capabilities();
-      if (caps.available === 'after-download') {
-        dispatch('downloading', 'Descargando Gemini Nano por primera vez...');
-        const s = await window.ai.languageModel.create();
-        s.destroy();
+      try {
+        const caps = await window.ai.languageModel.capabilities();
+        if (!caps || caps.available === 'no') {
+          dispatch('error', 'Gemini Nano no esta disponible. Activalo en chrome://flags/#prompt-api-for-gemini-nano');
+          return;
+        }
+        if (caps.available === 'after-download') {
+          dispatch('downloading', 'Descargando Gemini Nano por primera vez...');
+          const s = await window.ai.languageModel.create();
+          s.destroy();
+        }
+        dispatch('ready', 'gemini');
+      } catch (err) {
+        console.error('Error Gemini:', err);
+        dispatch('error', 'Error al iniciar Gemini Nano: ' + (err.message || ''));
       }
-      dispatch('ready', 'gemini');
     },
     get isReady() { return true; },
     get isLoading() { return false; },
     async generateReply(text, history) {
-      let prompt = '';
-      if (history && history.length > 0) {
-        for (const m of history.slice(-6)) {
-          prompt += (m.role === 'user' ? 'Usuario: ' : 'Asistente: ') + m.text + '\n\n';
-        }
-      }
-      prompt += 'Usuario: ' + text + '\n\nAsistente: ';
-      const session = await window.ai.languageModel.create({
-        systemPrompt: PROMPTS.systemPersonality
-      });
       try {
-        return await session.prompt(prompt);
-      } finally {
+        let prompt = '';
+        if (history && history.length > 0) {
+          for (const m of history.slice(-6)) {
+            prompt += (m.role === 'user' ? 'Usuario: ' : 'Asistente: ') + m.text + '\n\n';
+          }
+        }
+        prompt += 'Usuario: ' + text + '\n\nAsistente: ';
+        const session = await window.ai.languageModel.create({
+          systemPrompt: PROMPTS.systemPersonality
+        });
+        const result = await session.prompt(prompt);
         session.destroy();
+        return (typeof result === 'string') ? result.trim() : String(result).trim();
+      } catch (err) {
+        console.error('Error Gemini generando:', err);
+        return null;
       }
     }
   },
@@ -186,7 +198,12 @@ async function switchBackend(id) {
     dispatch('ready', 'off');
     return;
   }
-  await backends[id].start();
+  try {
+    await backends[id].start();
+  } catch (err) {
+    console.error('Error starting backend', id, err);
+    dispatch('error', 'Error al iniciar ' + backends[id].name + ': ' + (err.message || ''));
+  }
 }
 
 function getCurrentBackend() {
