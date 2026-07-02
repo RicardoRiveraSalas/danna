@@ -11,8 +11,15 @@
 <body>
 <div class="app-container">
   <div class="header">
-    <div class="header-title">🤖 Chat IA <span id="iaBadge" class="badge ia-inactive">🌐 Modo sin IA</span></div>
-    <div class="header-sub">Asistente local — sin consumo de API</div>
+    <div class="header-title">🤖 Chat IA <span id="iaBadge" class="badge ia-inactive">🌐 Sin IA</span></div>
+    <div class="header-sub">
+      <span>Asistente educativo local</span>
+      <select id="aiBackend" class="backend-select" aria-label="Motor de IA">
+        <option value="gemini">✨ Gemini Nano</option>
+        <option value="webllm">🧠 WebLLM</option>
+        <option value="off">🌐 Sin IA</option>
+      </select>
+    </div>
   </div>
 
   <div class="card">

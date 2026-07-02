@@ -32,7 +32,11 @@ body{
 .header-sub{
   font-size:.9em;
   opacity:.6;
-  margin-top:4px
+  margin-top:4px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap
 }
 .card{
   flex:1;
@@ -287,7 +291,21 @@ footer{
   font-family:inherit;font-size:.8em;cursor:pointer;outline:none
 }
 .theme-select option{background:#1a1a2e;color:#fff}
+.backend-select{
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:6px;color:#fff;padding:2px 6px;
+  font-family:inherit;font-size:.8em;cursor:pointer;
+  outline:none;margin-left:auto
+}
+.backend-select option{background:#1a1a2e;color:#fff}
+.backend-select:disabled{opacity:.5;cursor:not-allowed}
 [data-theme="retro"] .theme-select option{background:#c0c0c0;color:#000}
+[data-theme="retro"] .backend-select{
+  background:#c0c0c0;border:2px inset #ccc;border-radius:0;color:#000;
+  font-family:inherit;padding:1px 4px;font-size:.8em
+}
+[data-theme="retro"] .backend-select option{background:#c0c0c0;color:#000}
 
 /* ── Badge de estado IA ── */
 .badge{
