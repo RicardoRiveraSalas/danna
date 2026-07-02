@@ -69,10 +69,6 @@ body{
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .nav-buttons{
-  position:fixed;
-  top:20px;
-  right:20px;
-  z-index:500;
   display:flex;
   gap:10px;
   flex-wrap:wrap;
@@ -82,31 +78,26 @@ body{
   background:linear-gradient(135deg,#ff69b4,#00bfff);
   color:#fff;
   text-decoration:none;
-  padding:12px 24px;
+  padding:10px 20px;
   border-radius:25px;
   font-weight:600;
-  font-size:.95em;
+  font-size:.85em;
   cursor:pointer;
   transition:all .3s ease;
   box-shadow:0 4px 15px rgba(255,69,180,.3);
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:6px;
   border:none
 }
 .ruta-btn:hover{
-  transform:translateY(-3px);
+  transform:translateY(-2px);
   box-shadow:0 8px 25px rgba(255,69,180,.5)
 }
 @media(max-width:600px){
-  .nav-buttons{
-    top:10px;
-    right:10px;
-    gap:6px
-  }
   .ruta-btn{
     padding:8px 14px;
-    font-size:.85em
+    font-size:.8em
   }
 }
 footer{
@@ -140,14 +131,6 @@ footer{
 </style>
 </head>
 <body>
-<div class="nav-buttons">
-  <a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
-  <a href="chat.html" class="ruta-btn">🤖 Chat IA</a>
-</div>
-<div class="container" id="gallery"></div>
-<div class="modal-overlay" id="modal">
-  <img class="modal-img" id="modalImg" src="" alt="modal">
-</div>
 <footer class="footer">
   <div class="footer-info">
     <span class="footer-name">Danna Rivera</span>
@@ -155,8 +138,16 @@ footer{
       Estudiante de Diseño ·  CEDES Don Bosco Costa Rica
     </span>
   </div>
+  <div class="nav-buttons">
+    <a href="ruta-vocacional.html" class="ruta-btn">🌱 Ruta Vocacional</a>
+    <a href="chat.html" class="ruta-btn">🤖 Chat IA</a>
+  </div>
   <span class="footer-year">© 2026</span>
 </footer>
+<div class="container" id="gallery"></div>
+<div class="modal-overlay" id="modal">
+  <img class="modal-img" id="modalImg" src="" alt="modal">
+</div>
 <script>
 const images=[
   'fotos/img1.webp','fotos/img2.webp','fotos/img3.webp','fotos/img4.png',
