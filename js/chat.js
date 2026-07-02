@@ -1,25 +1,25 @@
 const STORAGE_KEY = 'danna_chat_history';
+const PREF_KEY = 'danna_ai_preference';
 
 const messagesEl = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
 const welcome = document.getElementById('welcome');
-const modelStatusEl = document.getElementById('modelStatus');
-const modelStatusIcon = document.getElementById('modelStatusIcon');
-const modelStatusText = document.getElementById('modelStatusText');
-const progressBar = document.getElementById('progressBar');
-const progressFill = document.getElementById('progressFill');
-const downloadActions = document.getElementById('downloadActions');
+const statusBar = document.getElementById('statusBar');
+const statusIcon = document.getElementById('statusIcon');
+const statusText = document.getElementById('statusText');
 const clearBtn = document.getElementById('clearBtn');
 
+let aiAvailable = false;
 let aiEnabled = false;
 let aiWelcomeShown = false;
+let panfoThisSession = false;
 let conversationHistory = [];
 
+// ── Persistencia ──
+
 function saveHistory() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(conversationHistory));
-  } catch (e) {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(conversationHistory)); } catch (e) {}
 }
 
 function loadHistory() {
@@ -37,6 +37,12 @@ function loadHistory() {
   return false;
 }
 
+function getPreference() { return localStorage.getItem(PREF_KEY); }
+function setPreference(v) { try { localStorage.setItem(PREF_KEY, v); } catch (e) {} }
+function clearPreference() { try { localStorage.removeItem(PREF_KEY); } catch (e) {} }
+
+// ── Render ──
+
 function getTime(ts) {
   const d = ts ? new Date(ts) : new Date();
   return d.toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
@@ -44,10 +50,8 @@ function getTime(ts) {
 
 function renderMessage(text, role, ts) {
   welcome?.remove();
-
   const msg = document.createElement('div');
   msg.className = 'msg ' + role;
-
   const avatar = document.createElement('div');
   avatar.className = 'msg-avatar';
   if (role === 'user') {
@@ -58,15 +62,12 @@ function renderMessage(text, role, ts) {
     img.className = 'avatar-img';
     avatar.appendChild(img);
   }
-
   const bubble = document.createElement('div');
   bubble.className = 'msg-bubble';
   bubble.textContent = text;
-
   const time = document.createElement('div');
   time.className = 'msg-time';
   time.textContent = getTime(ts);
-
   msg.appendChild(avatar);
   msg.appendChild(bubble);
   msg.appendChild(time);
@@ -84,10 +85,8 @@ function addMessage(text, role) {
 function setLoading(loading) {
   sendBtn.disabled = loading;
   sendBtn.textContent = loading ? '…' : '➤';
-
   const existing = messagesEl.querySelector('.typing');
   if (existing) existing.remove();
-
   if (loading) {
     const div = document.createElement('div');
     div.className = 'msg bot';
@@ -107,76 +106,59 @@ function setLoading(loading) {
   }
 }
 
-window.addEventListener('ai-model-status', (e) => {
-  const { status, progress } = e.detail;
-  if (!modelStatusEl) return;
+// ── Manejo de estado de IA ──
 
-  downloadActions.style.display = 'none';
+window.addEventListener('ai-status', async (e) => {
+  const { status, message } = e.detail;
 
   if (status === 'checking') {
-    modelStatusIcon.textContent = '🔍';
-    modelStatusText.textContent = 'Verificando si hay IA local disponible...';
-    progressBar.style.display = 'none';
-    modelStatusEl.style.display = 'flex';
-  } else if (status === 'downloading') {
-    modelStatusIcon.textContent = '⏳';
-    modelStatusText.textContent = e.detail.message;
-    progressBar.style.display = 'flex';
-    progressFill.style.width = progress + '%';
-    modelStatusEl.style.display = 'flex';
+    statusIcon.textContent = '🔍';
+    statusText.textContent = 'Verificando IA local disponible...';
+    statusBar.style.display = 'flex';
+  } else if (status === 'unavailable') {
+    statusBar.style.display = 'none';
+    aiAvailable = false;
+    if (!aiWelcomeShown && conversationHistory.length === 0) {
+      aiWelcomeShown = true;
+      addMessage(window.__ai.prompts.welcomeNoLocal, 'bot');
+    }
+  } else if (status === 'available') {
+    statusBar.style.display = 'none';
+    aiAvailable = true;
+    const pref = getPreference();
+    if (pref === 'yes') {
+      const ok = await window.__ai.createSession();
+      if (!ok) {
+        panfoThisSession = true;
+        if (!aiWelcomeShown && conversationHistory.length === 0) {
+          aiWelcomeShown = true;
+          addMessage(window.__ai.prompts.welcomeNoLocal, 'bot');
+        }
+      }
+    } else if (pref === 'no') {
+      aiEnabled = false;
+      if (!aiWelcomeShown && conversationHistory.length === 0) {
+        aiWelcomeShown = true;
+        addMessage(window.__ai.prompts.rejectLocal, 'bot');
+      }
+    } else if (!aiWelcomeShown && conversationHistory.length === 0) {
+      aiWelcomeShown = true;
+      addMessage(window.__ai.prompts.welcomeWithOffer, 'bot');
+    }
   } else if (status === 'ready') {
-    modelStatusEl.style.display = 'none';
     aiEnabled = true;
     if (!aiWelcomeShown && conversationHistory.length === 0) {
       aiWelcomeShown = true;
-      setTimeout(() => {
-        addMessage('¡Hola! Soy tu asistente con IA local 🧠\n\nPuedo ayudarte con tus estudios, tareas, orientación vocacional o cualquier duda. Todo funciona directamente en tu navegador, sin enviar datos a internet. ¿En qué necesitas ayuda?', 'bot');
-      }, 500);
+      setTimeout(() => addMessage(window.__ai.prompts.acceptLocal, 'bot'), 400);
     }
-  } else if (status === 'error') {
-    modelStatusEl.style.display = 'none';
+  } else if (status === 'panfo') {
     aiEnabled = false;
-    if (!aiWelcomeShown && conversationHistory.length === 0) {
-      aiWelcomeShown = true;
-      setTimeout(() => {
-        addMessage('¡Hola! 👋\n\nNo se pudo activar la IA local, pero igual puedo ayudarte con información sobre carreras, estudios y orientación vocacional. ¿En qué te puedo ayudar?', 'bot');
-      }, 500);
-    }
-  } else if (status === 'needs-download') {
-    modelStatusIcon.textContent = '🧠';
-    modelStatusText.innerHTML =
-      'Este chat puede usar <strong>inteligencia artificial directamente en tu navegador</strong>, sin enviar tus mensajes a ningún servidor. Es privada, gratuita y funciona completamente en tu equipo.<br><br>Para activarla, descarga el modelo (~300MB) <strong>solo la primera vez</strong>. ¿Quieres hacerlo?';
-    progressBar.style.display = 'none';
-    downloadActions.style.display = 'flex';
-    modelStatusEl.style.display = 'flex';
+    panfoThisSession = true;
+    if (message) addMessage(message, 'bot');
   }
 });
 
-document.getElementById('btnDownloadYes').addEventListener('click', () => {
-  modelStatusIcon.textContent = '⏳';
-  modelStatusText.textContent = 'Descargando IA local... no recargues la página.';
-  downloadActions.style.display = 'none';
-  progressBar.style.display = 'flex';
-  window.__startAIDownload?.();
-});
-
-document.getElementById('btnDownloadNo').addEventListener('click', () => {
-  modelStatusEl.style.display = 'none';
-  aiEnabled = false;
-  if (!aiWelcomeShown && conversationHistory.length === 0) {
-    aiWelcomeShown = true;
-    addMessage('¡Hola! 🙌\n\nEstá bien, usaré el modo básico. Pregúntame sobre carreras, estudios u orientación vocacional. Si después quieres activar la IA local, recarga la página.', 'bot');
-  }
-});
-
-clearBtn?.addEventListener('click', () => {
-  if (conversationHistory.length === 0) return;
-  conversationHistory = [];
-  localStorage.removeItem(STORAGE_KEY);
-  messagesEl.querySelectorAll('.msg').forEach(el => el.remove());
-  welcome.style.display = 'flex';
-  userInput.focus();
-});
+// ── Respuesta predefinida (fallback contextual) ──
 
 function localReply(text) {
   const t = text.toLowerCase();
@@ -204,6 +186,8 @@ function localReply(text) {
   return 'Cuéntame más sobre eso. Si tienes dudas sobre carreras, estudios o necesitas orientación, puedo ayudarte. También prueba la Ruta Vocacional 🌱 desde la página principal.';
 }
 
+// ── Envío de mensajes ──
+
 async function sendMessage() {
   const text = userInput.value.trim();
   if (!text) return;
@@ -213,22 +197,53 @@ async function sendMessage() {
   addMessage(text, 'user');
   setLoading(true);
 
-  let reply;
-  if (aiEnabled) {
-    try {
-      const ctx = conversationHistory.slice(-8, -1);
-      reply = await window.__aiGenerateResponse?.(text, ctx);
-    } catch (e) {
-      console.error('AI gen error:', e);
+  // ── Primera vez: detectar "sí"/"no" a la oferta ──
+  const pref = getPreference();
+  if (!pref && aiAvailable && conversationHistory.length <= 2) {
+    const lower = text.toLowerCase();
+    if (lower === 'sí' || lower === 'si' || lower === 'sisí' || lower === 's' || lower === 'yes') {
+      setPreference('yes');
+      const ok = await window.__ai.createSession();
+      if (!ok) {
+        panfoThisSession = true;
+        aiEnabled = false;
+        addMessage(window.__ai.prompts.fallbackPanfo, 'bot');
+      }
+      setLoading(false);
+      return;
     }
+    if (lower === 'no' || lower === 'nop' || lower === 'n') {
+      setPreference('no');
+      aiEnabled = false;
+      addMessage(window.__ai.prompts.rejectLocal, 'bot');
+      setLoading(false);
+      return;
+    }
+    // First real message: treat as "no" but still answer
+    setPreference('no');
+    aiEnabled = false;
+    addMessage(window.__ai.prompts.rejectLocal, 'bot');
+    await new Promise(r => setTimeout(r, 200 + Math.random() * 200));
+    addMessage(localReply(text), 'bot');
+    setLoading(false);
+    return;
+  }
+
+  // ── Responder con IA local o fallback ──
+  let reply = null;
+  if (aiEnabled && !panfoThisSession) {
+    const ctx = conversationHistory.slice(-8, -1);
+    reply = await window.__ai.generateReply(text, ctx);
   }
   if (!reply) {
-    await new Promise(r => setTimeout(r, 300 + Math.random() * 300));
+    await new Promise(r => setTimeout(r, 200 + Math.random() * 200));
     reply = localReply(text);
   }
   addMessage(reply, 'bot');
   setLoading(false);
 }
+
+// ── Eventos ──
 
 userInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
@@ -244,15 +259,42 @@ userInput.addEventListener('input', () => {
 
 sendBtn.addEventListener('click', sendMessage);
 
-const hasHistory = loadHistory();
-if (hasHistory) {
-  aiWelcomeShown = true;
-}
+clearBtn?.addEventListener('click', () => {
+  if (conversationHistory.length === 0 && !getPreference()) return;
+  conversationHistory = [];
+  localStorage.removeItem(STORAGE_KEY);
+  clearPreference();
+  messagesEl.querySelectorAll('.msg').forEach(el => el.remove());
+  welcome.style.display = 'flex';
+  aiWelcomeShown = false;
+  panfoThisSession = false;
+  aiEnabled = false;
+  aiAvailable = false;
+  window.__ai.destroySession();
+  userInput.focus();
+  // Re-detect AI after clear
+  window.__ai.detect().then(avail => {
+    if (avail) {
+      statusBar.style.display = 'none';
+      aiAvailable = true;
+      setTimeout(() => addMessage(window.__ai.prompts.welcomeWithOffer, 'bot'), 300);
+    } else {
+      aiAvailable = false;
+      setTimeout(() => addMessage(window.__ai.prompts.welcomeNoLocal, 'bot'), 300);
+    }
+    aiWelcomeShown = true;
+  });
+});
 
-// Handle race: AI status may have been dispatched before listener was attached
-const currStatus = window.__aiModelStatus;
-if (currStatus === 'ready' || currStatus === 'error') {
-  window.dispatchEvent(new CustomEvent('ai-model-status', {
-    detail: { status: currStatus, progress: window.__aiModelProgress || 0, message: window.__aiModelMessage || '' }
-  }));
-}
+// ── Inicialización ──
+
+const hasHistory = loadHistory();
+if (hasHistory) aiWelcomeShown = true;
+
+window.__ai.detect().then(avail => {
+  aiAvailable = avail;
+  if (!avail && !aiWelcomeShown && conversationHistory.length === 0) {
+    aiWelcomeShown = true;
+    addMessage(window.__ai.prompts.welcomeNoLocal, 'bot');
+  }
+});
