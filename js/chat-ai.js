@@ -153,7 +153,12 @@ const backends = {
         dispatch('ready', 'webllm');
       } catch (err) {
         console.error('Error WebLLM:', err);
-        dispatch('error', 'Error al cargar WebLLM: ' + (err.message || ''));
+        const msg = err.message || '';
+        if (msg.includes('maxComputeWorkgroupStorageSize')) {
+          dispatch('error', 'WebLLM requiere un GPU con mayor capacidad de memoria de grupo de trabajo.\n\nTu GPU solo soporta 16KB, necesita 32KB.\n\nSugerencias:\n- Actualiza drivers Mesa/Vulkan\n- Usa Chrome con Gemini Nano (si esta disponible)\n- O selecciona "Sin IA" para respuestas predefinidas.');
+        } else {
+          dispatch('error', 'Error al cargar WebLLM: ' + msg);
+        }
       } finally {
         webllmLoading = false;
       }
